@@ -3,10 +3,29 @@ import { pgTable, text, varchar, integer, decimal, timestamp, boolean, jsonb, in
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Supported locales and currencies for global coverage
-export const SUPPORTED_LOCALES = ['cs-CZ', 'de-DE', 'en-US', 'sk-SK', 'pl-PL', 'es-ES', 'fr-FR'] as const;
-export const SUPPORTED_CURRENCIES = ['EUR', 'USD', 'CZK', 'GBP'] as const;
+// Supported locales and currencies for global coverage (50+ languages planned)
+export const SUPPORTED_LOCALES = ['cs-CZ', 'de-DE', 'en-US', 'sk-SK', 'pl-PL', 'es-ES', 'fr-FR', 'fil-PH', 'id-ID', 'pt-BR', 'tr-TR', 'vi-VN', 'ja-JP', 'ko-KR', 'ru-RU'] as const;
+export const SUPPORTED_CURRENCIES = ['EUR', 'USD', 'CZK', 'GBP', 'PLN', 'PHP', 'IDR', 'BRL', 'TRY', 'VND'] as const;
 export const LAYER_TYPES = ['global', 'continent', 'country', 'city', 'personal'] as const;
+
+// Locale to currency mapping
+export const LOCALE_CURRENCY_MAP: Record<string, typeof SUPPORTED_CURRENCIES[number]> = {
+  'cs-CZ': 'CZK',
+  'sk-SK': 'EUR',
+  'de-DE': 'EUR',
+  'es-ES': 'EUR',
+  'fr-FR': 'EUR',
+  'pl-PL': 'PLN',
+  'en-US': 'USD',
+  'pt-BR': 'BRL',
+  'fil-PH': 'PHP',
+  'id-ID': 'IDR',
+  'tr-TR': 'TRY',
+  'vi-VN': 'VND',
+  'ja-JP': 'JPY' as any,
+  'ko-KR': 'KRW' as any,
+  'ru-RU': 'RUB' as any,
+};
 
 export type Locale = typeof SUPPORTED_LOCALES[number];
 export type Currency = typeof SUPPORTED_CURRENCIES[number];

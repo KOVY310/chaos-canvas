@@ -58,16 +58,17 @@ export default function CanvasPage() {
     enabled: !!currentUserId,
   });
 
-  // WebSocket for real-time updates
-  const { isConnected, send } = useWebSocket(currentLayer.id, {
-    onMessage: (message) => {
-      if (message.type === 'new_contribution') {
-        queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-      } else if (message.type === 'contribution_updated') {
-        queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-      }
-    },
-  });
+  // WebSocket for real-time updates (disabled for now - using polling instead)
+  // TODO: Re-enable WebSocket when HMR is properly configured
+  // const { isConnected, send } = useWebSocket(currentLayer.id, {
+  //   onMessage: (message) => {
+  //     if (message.type === 'new_contribution') {
+  //       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
+  //     } else if (message.type === 'contribution_updated') {
+  //       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
+  //     }
+  //   },
+  // });
 
   // Mutations
   const createContributionMutation = useMutation({
