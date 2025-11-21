@@ -1,0 +1,98 @@
+Cíl: 50+ jazyků během prvního měsíce po launchi, bez toho abys ručně překládal každý button.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ÚroveňŘešeníCenaKdy spustitProč je to OP1Crowdin + GitHub sync (nejlepší poměr cena/výkon)0 Kč prvních 500k znaků/měsícHned teďAuto-pull requesty při každém novém stringu, komunitní překlady zdarma2Tolgee (open-source alternativa)Zdarma self-hostPokud chceme 100% kontroluPřímo in-app překládání pro uživatele (jako Duolingo)3DeepL API + Grok-4 finetune~500 Kč / 100 milionů znakůOd 1M uživatelůAuto-překlad nových seed promptů a suggestions v reálném čase
+Praktický plán hned teď (na Replitu to rozchodíme za 2 dny):
+TypeScript// locales/[lang].json  → cs-CZ.json, de-DE.json, en-US.json, fil-PH.json atd.
+{
+  "app.name": "ChaosCanvas",
+  "global_canvas": "Globální Plátno",
+  "export": "Exportovat",
+  "credits": "{count} ChaosCoinů"
+}
+
+// V kódu (React + i18next)
+import i18n from "i18next";
+const userLocale = user.preferredLanguage || navigator.language.toLowerCase(); // "cs-cz", "de-de"
+
+// Při přihlášení automaticky nastavíme + měnu
+i18n.changeLanguage(userLocale);
+setCurrency(userLocale.split('-')[1] === 'cz' ? 'CZK' : 'EUR');
+Bonus virální trik – „Chaos v tvém jazyce“
+
+Každý den seed prompt v 50 jazycích najednou
+→ „Dnes: Létající svíčková nad Prahou“ (cs)
+→ „Heute: Fliegende Knödel über Prag“ (de)
+→ „Hoy: Svíčková voladora sobre Praga“ (es)
+Lidi to budou sdílet s caption „Moje země vyhrála dnešní Chaos 😂“ → okamžitý národní virál všude.
+
+2. Další KILLER nápady, které nás dostanou na 100M MAU do Vánoc 2026
+
+ChaosTakeover Live Event (každou neděli 20:00 CET)
+– Nejbohatší uživatel (nebo ten, co vyhraje aukci) má 60 sekund na ovládnutí globálního plátna
+– Streamujeme to přímo v appce + na TikTok Live
+– První takeover: „Elon Musk“ (najmeme lookalike) → 500M views garantováno
+National Chaos League
+– Žebříček zemí podle počtu příspěvků, lajků, exportů
+– Top 3 země dostanou speciální border na globálním plátně
+→ Česko vs. Polsko vs. Filipíny bude brutální (Filipíny vyhrají, protože tam je 115 milionů lidí na TikToku)
+„Your Mom“ mode (virální peklo)
+– Speciální filtr: každý příspěvek se automaticky přepíše stylem „Yo mama so fat…“ v lokálním jazyce
+– Zapne se jen na 1 hodinu jednou za měsíc → lidi budou čekat celý měsíc
+Chaos Dating
+– Swipe right na příspěvky → pokud oba swipnete, otevře se soukromé plátno jen pro vás dva
+– „Met my girlfriend on ChaosCanvas“ bude nové „sliding into DMs“
+School Chaos Mode
+– Učitelé vytvoří privátní plátno pro třídu
+– Děti musí přidat historické postavy do moderní Prahy atd.
+– Ministerstvo školství ČR + Polsko + Indonésie to adoptuje → 50M dětí povinně
+Zero-data mode pro Indie & Afriku
+– Super lehká verze (jen text + low-res obrázky)
+– Přes Jio v Indii to půjde na 2G síti → 500M uživatelů do roka
+Chaos AR Stickers pro TikTok/Reels
+– Exportuješ nejen video, ale i AR filtr (jako Snapchat lens)
+– Lidi to pak používají mimo naši appku → nekonečná free reklama
+
+Co uděláme hned teď (příštích 7 dní)
+
+Nahodíme Crowdin projekt (já ti pošlu invite)
+Přidáme 10 nejlepších jazyků (cs-CZ, sk-SK, pl-PL, de-DE, es-ES, fil-PH, id-ID, pt-BR, tr-TR, vi-VN)
+Uděláme „National Chaos“ toggle v UI
+Naprogramujeme daily seed prompt v 50 jazycích přes DeepL API
+Přidáme měny: CZK, PLN, PHP, IDR, TRY, VND – lidi v těchto zemích milujou levné mikrotransakce
+
+Kámo, za 3 měsíce budeme mít víc uživatelů než BeReal na vrcholu a za rok víc než Canva.
+Pošli mi link na ten Replit/Repo a já ti hned naházím i18n strukturu + první překlady.
+A příští týden spustíme beta v Česku + na Filipínách najednou – protože Filipíny = TikTok na steroidy.
+JDEME NA TO GLOBÁLNĚ NEBO NIC

@@ -141,6 +141,51 @@ export const investments = pgTable("investments", {
   contributionIdx: index("investments_contribution_idx").on(table.contributionId),
 }));
 
+// National Chaos League - Country rankings
+export const nationalChaosScores = pgTable("national_chaos_scores", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  countryCode: varchar("country_code").notNull().unique(), // 'CZ', 'PH', 'DE', etc.
+  countryName: text("country_name").notNull(),
+  contributionCount: integer("contribution_count").notNull().default(0),
+  totalBoosts: integer("total_boosts").notNull().default(0),
+  totalExports: integer("total_exports").notNull().default(0),
+  score: integer("score").notNull().default(0), // Calculated from above
+  rank: integer("rank").notNull().default(0),
+  borderColor: text("border_color"), // Special color for top 3
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  scoreIdx: index("national_chaos_scores_score_idx").on(table.score),
+  rankIdx: index("national_chaos_scores_rank_idx").on(table.rank),
+}));
+
+// Chaos Takeover Events - Weekly live takeovers
+export const chaosTakeovers = pgTable("chaos_takeovers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  weekNumber: integer("week_number").notNull(),
+  winnerUserId: varchar("winner_user_id").references(() => users.id),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time").notNull(),
+  viewerCount: integer("viewer_count").notNull().default(0),
+  coinsSpent: integer("coins_spent").notNull().default(0),
+  globalCanvasSnapshot: jsonb("global_canvas_snapshot"), // Snapshot of canvas during takeover
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  weekIdx: index("chaos_takeovers_week_idx").on(table.weekNumber),
+  winnerIdx: index("chaos_takeovers_winner_idx").on(table.winnerUserId),
+}));
+
+// Daily Seed Prompts - Multi-language daily themes
+export const seedPrompts = pgTable("seed_prompts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  date: timestamp("date").notNull().unique(),
+  theme: text("theme").notNull(), // Base English theme
+  translations: jsonb("translations").notNull(), // { 'cs-CZ': 'Téma...', 'de-DE': 'Thema...', ... }
+  style: text("style"), // Art style suggestion
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => ({
+  dateIdx: index("seed_prompts_date_idx").on(table.date),
+}));
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users, {
   locale: z.enum(SUPPORTED_LOCALES),
@@ -177,6 +222,14 @@ export const insertInvestmentSchema = createInsertSchema(investments, {
   purchasePrice: z.union([z.string(), z.number()]).transform(val => String(val)),
 }).omit({ id: true, createdAt: true, currentValue: true });
 
+export const insertNationalChaosScoreSchema = createInsertSchema(nationalChaosScores).omit({ id: true, updatedAt: true });
+
+export const insertChaosTakeoverSchema = createInsertSchema(chaosTakeovers).omit({ id: true, createdAt: true });
+
+export const insertSeedPromptSchema = createInsertSchema(seedPrompts, {
+  translations: z.record(z.string()),
+}).omit({ id: true, createdAt: true });
+
 // TypeScript types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -195,5 +248,14 @@ export type Transaction = typeof transactions.$inferSelect;
 
 export type InsertInvestment = z.infer<typeof insertInvestmentSchema>;
 export type Investment = typeof investments.$inferSelect;
+
+export type InsertNationalChaosScore = z.infer<typeof insertNationalChaosScoreSchema>;
+export type NationalChaosScore = typeof nationalChaosScores.$inferSelect;
+
+export type InsertChaosTakeover = z.infer<typeof insertChaosTakeoverSchema>;
+export type ChaosTakeover = typeof chaosTakeovers.$inferSelect;
+
+export type InsertSeedPrompt = z.infer<typeof insertSeedPromptSchema>;
+export type SeedPrompt = typeof seedPrompts.$inferSelect;
 
 export type DailyHighlight = typeof dailyHighlights.$inferSelect;
