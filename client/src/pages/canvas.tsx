@@ -14,7 +14,12 @@ import { PersonalBubblePanel } from '@/components/PersonalBubblePanel';
 import { ExportPanel } from '@/components/ExportPanel';
 import { LanguageCurrencySelector } from '@/components/LanguageCurrencySelector';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { NationalChaosLeaderboard } from '@/components/viral/NationalChaosLeaderboard';
+import { ChaosTakeoverCountdown } from '@/components/viral/ChaosTakeoverCountdown';
+import { DailySeedDisplay } from '@/components/viral/DailySeedDisplay';
+import { YourMomModeToggle } from '@/components/viral/YourMomModeToggle';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { LayerType, Contribution } from '@shared/schema';
 
 interface Layer {
@@ -28,6 +33,7 @@ export default function CanvasPage() {
   const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId } = useApp();
   const { toast } = useToast();
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('canvas'); // 'canvas' | 'league' | 'settings'
   const [currentLayer, setCurrentLayer] = useState<Layer>({
     id: 'global-1',
     type: 'global',
@@ -268,31 +274,56 @@ export default function CanvasPage() {
           </div>
         </div>
 
-        {/* Layer Switcher */}
-        <LayerSwitcher
-          currentLayer={currentLayer}
-          breadcrumbs={breadcrumbs}
-          onLayerChange={handleLayerChange}
-        />
+        {/* Tabs for Canvas vs League */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="w-full rounded-none border-b" data-testid="main-tabs">
+            <TabsTrigger value="canvas">Global Canvas</TabsTrigger>
+            <TabsTrigger value="league">National League 🔥</TabsTrigger>
+            <TabsTrigger value="settings">Settings ⚙️</TabsTrigger>
+          </TabsList>
 
-        {/* Infinite Canvas */}
-        <div className="flex-1 overflow-hidden">
-          <InfiniteCanvas
-            layerId={currentLayer.id}
-            contributions={canvasContributions}
-            onAddContribution={handleAddContribution}
-            isLoading={contributionsLoading}
+          {/* Canvas Tab */}
+          <TabsContent value="canvas" className="flex-1 overflow-hidden flex flex-col" data-testid="canvas-tab">
+            <LayerSwitcher
+              currentLayer={currentLayer}
+              breadcrumbs={breadcrumbs}
+              onLayerChange={handleLayerChange}
+            />
+
+            <div className="flex-1 overflow-hidden">
+              <InfiniteCanvas
+                layerId={currentLayer.id}
+                contributions={canvasContributions}
+                onAddContribution={handleAddContribution}
+                isLoading={contributionsLoading}
+              />
+            </div>
+          </TabsContent>
+
+          {/* League Tab */}
+          <TabsContent value="league" className="flex-1 overflow-y-auto p-4 space-y-6" data-testid="league-tab">
+            <DailySeedDisplay />
+            <ChaosTakeoverCountdown />
+            <NationalChaosLeaderboard />
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
+            <h2 className="font-heading text-2xl font-bold">Settings</h2>
+            <YourMomModeToggle />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Contribution Feed (Right) - only show on canvas tab */}
+      {activeTab === 'canvas' && (
+        <div className="w-80 hidden lg:block">
+          <ContributionFeed
+            contributions={contributionFeed}
+            onBoost={handleBoost}
           />
         </div>
-      </div>
-
-      {/* Contribution Feed (Right) */}
-      <div className="w-80 hidden lg:block">
-        <ContributionFeed
-          contributions={contributionFeed}
-          onBoost={handleBoost}
-        />
-      </div>
+      )}
     </div>
   );
 }

@@ -119,3 +119,20 @@ export async function getUserInvestments(userId: string): Promise<Investment[]> 
   const response = await apiRequest('GET', `/api/investments/user/${userId}`, undefined);
   return response.json();
 }
+
+// ========== VIRAL FEATURES API ==========
+
+export async function getDailySeedPrompt(locale: string = 'en-US'): Promise<any> {
+  const response = await apiRequest('GET', `/api/daily-seed-prompts?locale=${locale}`, undefined);
+  return response.json();
+}
+
+export async function getNationalChaosLeague(): Promise<any> {
+  const response = await apiRequest('GET', '/api/national-chaos-league', undefined);
+  return response.json();
+}
+
+export async function getChaosTakeover(): Promise<any> {
+  const response = await apiRequest('GET', '/api/chaos-takeover', undefined);
+  return response.json();
+}

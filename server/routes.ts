@@ -469,6 +469,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ========== VIRAL FEATURES API ==========
+
+  app.get("/api/daily-seed-prompts", async (req, res) => {
+    try {
+      const locale = (req.query.locale as string) || 'en-US';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Mock seed prompt data - in production this would come from database
+      const globalPrompt = {
+        'en-US': 'Flying svíčková over Prague',
+        'cs-CZ': 'Létající svíčková nad Prahou',
+        'de-DE': 'Fliegende Knödel über Prag',
+        'fil-PH': 'Lumipad na Svíčková sa ibabaw ng Prague',
+        'id-ID': 'Svíčková terbang di atas Praha',
+        'pt-BR': 'Svíčková voando sobre Praga',
+      };
+
+      const tomorrowMidnight = new Date(today);
+      tomorrowMidnight.setDate(tomorrowMidnight.getDate() + 1);
+
+      res.json({
+        globalPrompt: globalPrompt[locale as keyof typeof globalPrompt] || globalPrompt['en-US'],
+        allLanguages: globalPrompt,
+        expiresAt: tomorrowMidnight.toISOString(),
+        style: 'Baroque meets cyberpunk',
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/national-chaos-league", async (req, res) => {
+    try {
+      // Mock leaderboard data - in production would aggregate from contributions
+      const leaderboard = [
+        { countryCode: 'PH', countryName: 'Philippines 🇵🇭', score: 5240, contributionCount: 1250, rank: 1, borderColor: '#fbbf24' },
+        { countryCode: 'CZ', countryName: 'Czechia 🇨🇿', score: 4180, contributionCount: 980, rank: 2, borderColor: '#f87171' },
+        { countryCode: 'ID', countryName: 'Indonesia 🇮🇩', score: 3920, contributionCount: 850, rank: 3, borderColor: '#60a5fa' },
+        { countryCode: 'DE', countryName: 'Germany 🇩🇪', score: 3450, contributionCount: 720, rank: 4, borderColor: '' },
+        { countryCode: 'BR', countryName: 'Brazil 🇧🇷', score: 3210, contributionCount: 680, rank: 5, borderColor: '' },
+        { countryCode: 'ES', countryName: 'Spain 🇪🇸', score: 2980, contributionCount: 640, rank: 6, borderColor: '' },
+        { countryCode: 'PL', countryName: 'Poland 🇵🇱', score: 2850, contributionCount: 620, rank: 7, borderColor: '' },
+        { countryCode: 'TR', countryName: 'Turkey 🇹🇷', score: 2720, contributionCount: 590, rank: 8, borderColor: '' },
+        { countryCode: 'VN', countryName: 'Vietnam 🇻🇳', score: 2580, contributionCount: 560, rank: 9, borderColor: '' },
+        { countryCode: 'JP', countryName: 'Japan 🇯🇵', score: 2450, contributionCount: 540, rank: 10, borderColor: '' },
+      ];
+
+      res.json({
+        leaderboard,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/chaos-takeover", async (req, res) => {
+    try {
+      // Next takeover is next Sunday at 20:00 CET
+      const now = new Date();
+      let nextTakeover = new Date();
+      nextTakeover.setDate(nextTakeover.getDate() + ((7 - nextTakeover.getDay()) % 7));
+      nextTakeover.setHours(20, 0, 0, 0);
+      
+      if (nextTakeover <= now) {
+        nextTakeover.setDate(nextTakeover.getDate() + 7);
+      }
+
+      const isLive = false; // Only live on Sunday 20:00
+      const currentHighestBid = isLive ? 5000 : undefined;
+
+      res.json({
+        nextTakeoverAt: nextTakeover.toISOString(),
+        currentBid: currentHighestBid,
+        isLive,
+        winner: null,
+        description: 'Global Canvas Takeover - 60 seconds of pure chaos control',
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ========== DAILY HIGHLIGHTS (Cron job will be in separate file) ==========
   
   app.get("/api/highlights/latest", async (req, res) => {

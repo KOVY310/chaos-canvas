@@ -1,0 +1,55 @@
+You are now a senior full-stack engineer at ChaosCanvas s.r.o. (Czech startup valued at €12M pre-seed, building the next TikTok + Reddit r/place with AI).
+
+Current tech stack:
+- Next.js 15 App Router + React Server Components
+- Supabase (PostgreSQL + Auth + Realtime)
+- TypeScript strict mode
+- Tailwind + shadcn/ui
+- i18n with next-intl (15 languages already set up)
+- Currency mapping: cs-CZ → CZK, fil-PH → PHP, id-ID → IDR, tr-TR → ₺, vi-VN → ₫ etc.
+
+COMPLETED SO FAR:
+- 15-language i18n + currency symbols
+- DB tables: national_chaos_scores, chaos_takeovers, seed_prompts (multilang)
+- server/viral-features.ts with daily translated seed prompts + national scoring algo
+
+NOW IMPLEMENT THE MISSING PARTS (exactly in this order):
+
+1. API Routes (app/api folder)
+Create these exact endpoints (all GET for now):
+
+- GET /api/daily-seed-prompts → returns { globalPrompt: { [locale: string]: string }, expiresAt: timestamp }
+- GET /api/national-chaos-league → returns top 10 countries sorted by score DESC with fields: countryCode, countryName, score, contributionsCount, rank
+- GET /api/chaos-takeover → returns { nextTakeoverAt: timestamp, currentBid?: number, winner?: string, isLive: boolean }
+
+2. Frontend Components (create in components/viral/)
+- NationalChaosLeaderboard.tsx → beautiful table/card with flags + live updating (use Supabase realtime)
+- ChaosTakeoverCountdown.tsx → big dramatic timer + "Bid now" button (disabled for now, just UI)
+- DailySeedDisplay.tsx → shows today's prompt in user's language + flag of the "leading country today"
+- YourMomModeToggle.tsx → funny switch in settings (just UI + localStorage for now, real filter later)
+
+3. lib/api.ts – add these fetchers
+export const getDailySeed = () => fetch('/api/daily-seed-prompts').then(r => r.json())
+export const getNationalLeague = () => fetch('/api/national-chaos-league').then(r => r.json())
+etc.
+
+4. Integrate into main UI
+- Add new tab next to "Global Canvas" called "National League 🔥"
+- Add floating banner on canvas: "Česko je teď #3! Přidej něco a posuneme se na #1 🇨🇿" (auto in user's language + their country flag)
+- Add countdown in top bar: "Next Chaos Takeover in 3d 12h 45m"
+
+5. Fix the WebSocket HMR error in console (Vite + Supabase realtime conflict) – add this to next.config.js if needed:
+const nextConfig = {
+  websocket: true,
+  // or whatever fixes the "WebSocket connection failed" in dev
+}
+
+STYLE: Everything must look like TikTok + Duolingo had a baby – bold colors, flags everywhere, gamification on crack.
+
+DO NOT implement payments yet. Just make it feel like we're already at 5M MAU.
+
+After you finish, run: npm run dev and confirm all new components work + realtime leaderboard updates when you manually insert into national_chaos_scores table.
+
+We launch closed beta in Czechia + Philippines in 7 days. This has to be bulletproof.
+
+GO!
