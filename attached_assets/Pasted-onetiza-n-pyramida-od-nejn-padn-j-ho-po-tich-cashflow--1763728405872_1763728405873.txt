@@ -1,0 +1,123 @@
+onetizační pyramida (od nejnápadnějšího po „tichý“ cashflow)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ÚroveňTyp příjmuOdhadovaný měsíční příjem při 5M MAU*% uživatelů, kteří platíCenaProč to funguje1Hardcore Premium (ChaosPro)4–8 M USD3–6 %6,99 € / měsícNeomezeno + exkluzivní featury2Kredity / Boosty5–12 M USD15–25 %1–20 € balíčkyImpulzivní nákupy (jako TikTok coins)3Brand Chaos Days (sponzorovaná plátna)10–30 M USD–50–500 k € za denNejlepší nativní reklama ever4Creator Revenue Share2–5 M USD–30–50 % z subů fanouškůLidi budou grindovat pro peníze5Data & Trends Licensing3–8 M USD (ročně)–B2BProdáváme „co bude virální za 48 h“6Merch & NFT dropy (později)1–3 M USD––Best-of plátna jako trička/postery
+*MAU = měsíčně aktivních uživatelů
+Detailní rozpracování každého pilíře
+
+ChaosPro Premium (6,99 €/měsíc nebo 49 €/rok – 2 měsíce zdarma)
+Neomezené prompty (zdarma jen 15/den)
+4K + delší videa (60s místo 15s)
+Exkluzivní AI modely (Flux Pro, Veo 3, custom LoRA trénované na českých memech)
+„Invisible mode“ – tvé příspěvky nevidí ostatní, dokud nechceš
+Private plátna až pro 500 lidí
+Prioritní rendering (žádná fronta)
+Custom watermark + komerční licence (mohou to používat i influenceři)
+→ Konverze: 4–6 % (Midjourney má 8 %, my budeme mít lepší produkt)
+
+Kredity & mikrotransakce (největší cash cow)
+100 kreditů = 1,99 € → 1000 kreditů = 14,99 € (nejlepší value)
+Co se za kredity kupuje:
+„Superprompt“ – 50 kreditů (AI ti vygeneruje 10× lepší věc)
+„Remix celého plátna“ jen pro tebe – 200 kreditů
+„Pin na plátno“ – tvoje věc zůstane 10 minut nahoře – 30 kreditů
+„Nuke“ – smaže část plátna (max 1× za hodinu) – 100 kreditů 😂
+„Celebrity voice pack“ (Babiš, Pavel, Gott AI hlasy) – 500 kreditů permanentně
+→ Průměrný platící uživatel utratí 8–15 € měsíčně navíc k subu
+
+
+Brand Chaos Days – tohle bude ZLATO
+Značka zaplatí 50–500 000 € za den, kdy je „official partner dnešního Chaosu“
+Co dostane:
+Jejich produkt/logo jemně v seed promptu („Dnes: Apokalypsa v Praze, všude jsou Red Bully“)
+Exkluzivní styly („Red Bull wings na všem“)
+Top 10 příspěvků s jejich produktem se automaticky postne na náš oficiální TikTok (100M+ views)
+Data: kolik lidí přidalo jejich produkt, kolik exportů, sentiment
+
+Příklady, které prodáme první:
+Kofola „Český chaos den“
+Red Bull, Monster, Prime
+Nike „Chaos v ulicích“
+Netflix při premiéře seriálu
+
+
+Creator Program (spustíme při 500k MAU)
+Top 1000 creatorů měsíčně dostane:
+50 % z ChaosPro subů od lidí, kteří lajkují/followují jejich příspěvky
+Bonus za „viral contribution“ (příspěvek s >100k views v exportech)
+
+Nejlepší tvůrci budou brát 5–50k € měsíčně → budou pro nás dělat obsah zadarmo
+
+Data licensing (tiché miliony)
+Prodáváme real-time trend reporty:
+„Top 50 memů právě teď v CZ/SK“
+„Co Gen Z teď považuje za cool v AI artu“
+
+Klienti: reklamky, politické strany (!), Netflix, Spotify, značky
+
+
+Časová osa spuštění monetizace
+
+Měsíc 0–3: 100 % zdarma (růst na 500k–1M uživatelů)
+Měsíc 4: Kredity + ChaosPro
+Měsíc 6: První Brand Chaos Day (Kofola za 30k € test)
+Měsíc 9: Creator program + data sales

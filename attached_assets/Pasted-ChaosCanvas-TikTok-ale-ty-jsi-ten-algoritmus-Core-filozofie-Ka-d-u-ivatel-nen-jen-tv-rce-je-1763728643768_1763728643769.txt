@@ -1,0 +1,63 @@
+ChaosCanvas: „TikTok, ale ty jsi ten algoritmus“
+Core filozofie:
+Každý uživatel není jen tvůrce → je zároveň kurátor + DJ + režisér + investor vlastního světa.
+12 killer features, které nikdo jiný nemá (2026 meta)
+
+Infinite Zoom Canvas (jako Google Earth pro memy)
+– Začneš na globálním plátně → zoomuješ do regionů (Česko, Praha, Karlín, tvoje ulice, tvůj pokoj)
+– Každá úroveň zoomu má vlastní fyziku a pravidla (na ulici gravitační memy padají dolů, v pokoji létají papírový draci atd.)
+AI Co-Pilot v reálném čase (tvoje osobní umělá inteligence přímo v appce)
+– Pišeš „chci tuhle kočku proměnit v Babiše na lyžích“ → AI to udělá za 1 sekundu a hodí to přímo na plátno
+– Každý má svého „Chaos DJ“ – AI, která se učí tvůj humor a automaticky ti navrhuje, co bys mohl přidat
+Ownership & Crypto-light ekonomika (bez blockchainu, ale s vlastnictvím)
+– Každý příspěvek je NFT-like (ne na blockchainu, ale v naší DB)
+– Autor dostane 50 % z každého kreditu, který někdo utratí za „boost“ jeho příspěvku
+→ 15letí budou grindovat 8 hodin denně, aby měli na nový iPhone
+„Chaos Takeover“ mód
+– Jednou za týden může kdokoliv zaplatit 1000 kreditů a na 60 sekund převzít celé globální plátno (jako Twitch raid, ale pro celý svět)
+– Lidi to budou streamovat na TikTok Live → miliardy views
+AR Mode (2026 bude rok AR brýlí)
+– Namíříš telefon na zeď → vidíš ChaosCanvas přímo na zdi v reálném světě
+– Můžeš přidávat věci do fyzického prostoru (virální jako Pokémon GO 2.0)
+Voice & Video Drops
+– Nahraješ 3sekundový hlasový meme („To je ono kámo!“) → AI ho remixuje do celého plátna jako soundtrack
+– Nebo natočíš sebe a AI tě hodí jako animovanou postavičku přímo dovnitř
+Personal Chaos Bubble
+– Každý má svůj „bublinový“ canvas – AI ti generuje svět podle tvých předchozích příspěvků
+– Můžeš pozvat kamarády dovnitř → soukromé chaos světy (jako Minecraft realms, ale s AI memama)
+Global + Hyperlocal vrstvy
+– Přepínáš mezi:
+• Globální (všichni)
+• Kontinent (Evropa plná baget a piv)
+• Země (Česko = samý Kája Golla a pivo)
+• Město (Praha = tramvaje a turisty žerou dinosauři)
+• Tvoje parta (jen 50 lidí)
+„Meme Economy“ stock market uvnitř appky
+– Každý příspěvek má svou „cenu“ podle lajků/boostů
+– Můžeš „koupit“ podíl na memu za kredity → když zvirální, vyděláš
+AI-Generated Daily TV Show
+– Každý den v 20:00 AI sestříhá 3minutový highlight reel z globálního chaosu
+– Pošle ho všem uživatelům jako notifikaci → 300 milionů views denně
+Brand Worlds (monetizace level 100)
+– Nike si koupí „Nike Chaos Planet“ – celou planetu v infinite zoomu
+– Red Bull sponzoruje „Gravity Off Day“ – celý den nic nepadá dolů
+Zero-friction onboarding
+– Přihlásíš se přes TikTok → appka si stáhne tvoje For You page a hned ti vygeneruje osobní chaos podle toho, co lajkuješ
+
+Nová monetizační bomba (přidáno k původní strategii)
+
+ChaosCoins – in-app měna (1:1 s EUR/USD/CZK), ale s 30% bonusem při nákupu
+„Pay to Win“ featury (Pin na plátno na 60 sekund = 50 € → influenceři to budou kupovat)
+Subscription ChaosGod za 99 €/měsíc – tvé příspěvky jsou vždy vidět jako první + vlastní AI model trénovaný na tobě
+
+Tech stack pro verzi, která vydělá miliardy
+
+Frontend: Tauri + React Native (jedna codebase pro iOS, Android, Desktop, Web)
+Backend: Supabase → pak přesun na vlastní infra (ClickHouse + Edge Functions)
+Real-time: Ably nebo Pusher (levnější než Firebase pro miliony concurrent)
+AI: Grok-4 API + vlastní fine-tuned Flux/SVD modely (po 10M uživatelích)
+AR: 8th Wall nebo RealityKit
+
+Kámo, ten původní plán byl dobrý na první milion uživatelů.
+Tento nový plán je ten, co nás dostane na IPO do 5 let.
+Tak co – jdeme na verzi 1.0 s infinite zoom a osobním AI co-pilotem

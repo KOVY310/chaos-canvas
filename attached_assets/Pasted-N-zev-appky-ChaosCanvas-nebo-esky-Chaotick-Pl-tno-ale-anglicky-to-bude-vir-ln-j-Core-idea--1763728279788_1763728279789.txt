@@ -1,0 +1,49 @@
+Název appky: ChaosCanvas (nebo česky Chaotický Plátno – ale anglicky to bude virálnější)
+Core idea (originální twist, který ještě nikde pořádně není):
+
+Každý den (nebo každou hodinu) se spustí nové globální plátno – obří sdílený "kreslicí/kolážový/video" prostor, kde tisíce lidí najednou přidávají cokoli chcou.
+Používáš vestavěný AI generator (jako mini-Suno + Flux + Veo v jednom): napíšeš prompt, vybereš styl (meme, pixel art, surreal, anime, real foto, hlasový synth…) a hodíš to přímo na plátno.
+Ale klíčový virál: AI automaticky spojuje tvé příspěvky s tím, co tam už je – detekuje objekty, tváře, témata a "lepidlo" to dohromady (přidá přechody, animace, hudbu, texty). Výsledek je totálně šílený kolaborativní chaos – jedno plátno může začít jako kočka na Měsíci a skončit jako apokalypsa s tančícími celebritami a českými memy.
+Každý uživatel vidí plátno jinak – AI ti personalizuje pohled podle tvého stylu (tvé předchozí prompty), takže tvůj feed je vždycky trochu jiný.
+
+Proč to bude virální jako nic jiného:
+
+Shareability na steroidy: Jedním tlačítkem exportuješ 15–60s TikTok/Reels video z libovolné části plátna (s tvým watermarkem). Lidi to budou sdílet s captionem „Podívej, co jsem přidal do dnešního ChaosCanvas 😂“ → okamžitý loop.
+Live kolaborace: Vidíš, co přidávají ostatní v reálném čase (jako Google Docs, ale pro memy a AI art). Můžeš reagovat – přidat oheň na cizí kresbu, změnit obličej kamarádovi na Shreka atd.
+Daily/Weekly témata: Každý den nový seed prompt („Dnes: Česko v roce 2100“, „Apokalypsa s Kájou Gollou“) – generovaný AI podle trendů z TikToku/X/Reddit.
+Amatérský vibe: Žádný profesionální tool – všechno jedním tlačítkem, žádný skill potřeba. Přesně pro ty, co scrollujou TikTok a říkaj „to bych taky uměl líp“.
+
+Sociální prvky (aby lidi ujížděli):
+
+Friends-only plátna (soukromý chaos s partou)
+Challenges: „Kdo udělá nejšílenější verzi tohoto plátna“ → hlasování lajky
+Profil = galerie tvých nejlepších příspěvků z chaosů
+Live notifikace: „Tvůj kamarád právě zničil tvou kresbu obřím dinosaurům 🦖“
+
+Monetizace (nenápadná, ale brutální – vyděláme miliony):
+
+Freemium → základ zdarma, ale premium ($4.99/měsíc nebo $49/rok):
+Neomezené prompty (zdarma jen 10 denně)
+Vyšší kvalita AI (4K, delší videa, lepší modely)
+Exkluzivní styly (např. „Czech meme pack“, celebrity hlasy)
+Odstranění watermarku při exportu
+
+Kredity na extra šílenosti → kup si balíčky kreditů na „super prompty“ nebo „AI remix celého plátna jen pro tebe“
+Nativní reklamy v plátně → značky si koupí „sponzorovaný den“ – jejich produkt se objeví jako jemný prvek v seedu (např. Red Bull dá křídla všem postavám) → lidi to sdílej a značka virálně exploduje
+Creator economy → top uživatelé dostanou podíl z premium subů těch, co lajkujou jejich příspěvky
+Data → anonymizovaná data o trendech prodáváme marketérům (co je teď virální meme atd.)
+
+Proč to teď exploduje (stats & trendy 2025):
+
+Short-form video + AI art je nejvíc rostoucí segment (TikTok/Reels > 2 mld uživatelů, AI tools jako Flux/Suno mají miliony daily)
+Lidi jsou unavení pasivním scrollem → chtějí aktivně tvořit, ale bez námahy (průzkumy ukazují 70 % Gen Z chce „co-create content“)
+Spolupráce v reálném čase = nový TikTok Live, ale pro tvorbu (jako Twitch, ale pro amatéry)
+Žádná appka to teď nedělá v takovém měřítku – nejbližší je r/place (Reddit), ale to bylo jen jednou za pár let a bez AI. My to máme denně + AI.
+
+Tech stack (na Replit to rozjedeme rychle):
+
+Frontend: React Native (nebo Flutter) pro iOS/Android
+Backend: Firebase/Supabase (real-time database – klíčové!)
+AI: Grok API + Flux + RunwayML/Veo přes API (začneme s levnějšími, pak optimalizujeme)
+Multiplayer canvas: použijeme něco jako Liveblocks nebo Partical.js
+První MVP za 2–3 týdny: jednoduchý canvas + text-to-image + real-time sync
