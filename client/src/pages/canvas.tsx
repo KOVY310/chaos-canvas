@@ -24,13 +24,15 @@ import { ConfettiEffect } from '@/components/viral/ConfettiEffect';
 import { SaveYourChaosPrompt } from '@/components/SaveYourChaosPrompt';
 import { UserContributionsTab } from '@/components/UserContributionsTab';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
-import { MobileFloatingAdd } from '@/components/mobile/MobileFloatingAdd';
-import { MobileLeagueBanner } from '@/components/mobile/MobileLeagueBanner';
+import { StoriesBanner } from '@/components/mobile/StoriesBanner';
+import { MobileTikTokCanvas } from '@/components/mobile/MobileTikTokCanvas';
+import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Share2 } from 'lucide-react';
+import { Share2, Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { LayerType, Contribution } from '@shared/schema';
 
 interface Layer {
@@ -46,6 +48,7 @@ export default function CanvasPage() {
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas'); // 'canvas' | 'league' | 'settings'
   const [showConfetti, setShowConfetti] = useState(false);
+  const [creatorOpen, setCreatorOpen] = useState(false);
   const [currentLayer, setCurrentLayer] = useState<Layer>({
     id: 'global-1',
     type: 'global',
@@ -351,77 +354,93 @@ export default function CanvasPage() {
         )}
       </div>
 
-      {/* MOBILE LAYOUT */}
+      {/* MOBILE LAYOUT - TIKTOK STYLE */}
       <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background">
-        {/* Mobile League Banner (Stories style) */}
-        {activeTab === 'league' && <MobileLeagueBanner />}
+        {/* Stories Banner */}
+        {activeTab === 'canvas' && <StoriesBanner />}
 
-        {/* Content Area with pb-20 for bottom nav space */}
-        <div className="flex-1 overflow-y-auto pb-20">
-          {activeTab === 'canvas' && (
-            <div className="space-y-0">
-              <div className="sticky top-0 z-20 bg-card border-b border-border p-3">
-                <div className="flex items-center justify-between">
-                  <h1 className="font-heading font-bold text-lg">{t('appName')}</h1>
-                  <div className="flex gap-2">
-                    <ChaosCoinsDisplay balance={chaosCoins} subscriptionTier={null} />
-                    <ThemeToggle />
-                  </div>
-                </div>
-              </div>
-              <div className="h-96 overflow-hidden">
-                <InfiniteCanvas
-                  layerId={currentLayer.id}
-                  contributions={canvasContributions}
-                  onAddContribution={handleAddContribution}
-                  isLoading={contributionsLoading}
-                />
-              </div>
-            </div>
-          )}
+        {/* Main Content */}
+        {activeTab === 'canvas' && (
+          <>
+            <MobileTikTokCanvas
+              contributions={canvasContributions}
+              onAddContribution={handleAddContribution}
+              isLoading={contributionsLoading}
+            />
+          </>
+        )}
 
-          {activeTab === 'league' && (
+        {activeTab === 'league' && (
+          <div className="flex-1 overflow-y-auto pb-20">
             <div className="p-4 space-y-6">
               <DailySeedDisplay />
               <ChaosTakeoverCountdown />
               <NationalChaosLeaderboard />
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'mine' && (
-            <div className="p-4 space-y-4">
-              <h2 className="font-heading text-lg font-bold">My Contributions</h2>
-              <UserContributionsTab />
+        {activeTab === 'mine' && (
+          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
+            <h2 className="font-heading text-lg font-bold">Můj Chaos</h2>
+            <UserContributionsTab />
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
+            <h2 className="font-heading text-lg font-bold">Nastavení</h2>
+            <YourMomModeToggle />
+            <LanguageCurrencySelector />
+            <ThemeToggle />
+            <div className="pt-4 border-t space-y-4">
+              <Button
+                className="w-full"
+                data-testid="button-share-tiktok"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'ChaosCanvas',
+                      text: 'Prátvě jsem přidal tenhle šílený chaos 😂 chaos.canvas',
+                      url: window.location.href,
+                    });
+                  }
+                }}
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                Sdílet na TikTok
+              </Button>
+              <ShareButton />
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'settings' && (
-            <div className="p-4 space-y-4">
-              <h2 className="font-heading text-lg font-bold">Settings</h2>
-              <YourMomModeToggle />
-              <LanguageCurrencySelector />
-              <div className="pt-4 border-t space-y-4">
-                <Button className="w-full" data-testid="button-share-tiktok">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Sdílet na TikTok
-                </Button>
-                <ShareButton />
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Creator Modal */}
+        <CreatorModal
+          open={creatorOpen}
+          onOpenChange={setCreatorOpen}
+          onSubmit={handleAddContribution}
+          isLoading={createContributionMutation.isPending}
+        />
 
-        {/* Mobile Floating UI */}
+        {/* Floating Rainbow Add Button (Center Bottom) */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setCreatorOpen(true)}
+          className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white shadow-2xl z-40 flex items-center justify-center hover:shadow-3xl active:scale-90 transition-all border-4 border-white/20"
+          data-testid="button-create-floating"
+        >
+          <Plus className="w-10 h-10" />
+        </motion.button>
+
+        {/* AI Co-Pilot Bubble */}
         <MobileAICopilotBubble
           onGenerate={handleGenerateContent}
           isLoading={generateAIMutation.isPending}
         />
-        <MobileFloatingAdd
-          onAddContent={handleAddContribution}
-          isLoading={createContributionMutation.isPending}
-        />
 
-        {/* Mobile Bottom Navigation */}
+        {/* Bottom Navigation */}
         <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     </>

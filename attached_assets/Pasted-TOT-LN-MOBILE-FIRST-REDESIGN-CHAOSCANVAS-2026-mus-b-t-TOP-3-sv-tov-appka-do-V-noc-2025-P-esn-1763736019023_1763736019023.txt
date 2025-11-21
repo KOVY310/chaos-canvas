@@ -1,0 +1,58 @@
+TOTÁLNÍ MOBILE-FIRST REDESIGN → CHAOSCANVAS 2026 (musí být TOP 3 světová appka do Vánoc 2025)
+
+Přesně podle těchto pravidel (žádný kompromis):
+
+1. Layout (pouze mobil <768px):
+   - 100% full-screen vertical infinite canvas (jako TikTok For You)
+   - ŽÁDNÝ levý panel, žádný zoom slider, žádná mini-map → všechno schovat
+   - Swipe nahoru/dolů = prohlížíš chaos, swipe left/right na příspěvku = like / nuke
+
+2. Horní Stories banner (jako Instagram):
+   - Dnes: „Létající svíčková nad Prahou 🇨🇿“
+   - Pak: „Filipíny vedou o 520k příspěvků 😂🇵🇭 CZ #2“ s vlajkami a confetti
+   - Pak: „Chaos Takeover za 3d 12h 45m“
+
+3. Bottom navigation (přesně 4 ikony, TikTok styl):
+   Canvas (dům) | League 🔥 | Mine (osoba) | Settings (ozubené)
+
+4. Floating Action Buttons (obří, neonové, 2025 meta):
+   - Uprostřed dole: velký duhový gradient + (80px) → otevře full-screen creator
+   - Dole vlevo: purple AI Copilot bubble (jako Instagram kamera) → „Kámo, co chceš přidat?“
+
+5. Full-screen Creator modal (nejdůležitější stránka appky):
+   - Nahoře velký prompt input + voice hold-to-talk mikrofon
+   - Pod ním 2×3 Bento grid velkých návrhů (každý s AI náhledem 300×300px)
+   - Nahoře style toggles: Meme 🔥 | Surreal | Pixel | Anime | Chaos
+   - Dole velké „PŘIDAT NA PLÁTNO“ tlačítko s haptics + confetti
+
+6. Micro-interactions na max:
+   - Každý tap = jemná vibrace + „pop“ zvuk
+   - Při přidání = explozivní confetti + haptics burst
+   - Like = srdce letí nahoru jako TikTok
+   - Když tvoje země #1 = celá obrazovka confetti + národní hymna snippet
+
+7. Export flow:
+   - Po přidání rovnou modal: „Sdílet tenhle chaos na TikTok/Reels“
+   - Jedno tlačítko → native share sheet s předpřipraveným captionem:
+     „Právě jsem přidal tenhle šílený chaos 😂 chaos.canvas“
+
+8. Další povinné bomby:
+   - Pull-to-refresh = nový daily seed
+   - Double tap na příspěvek = boost (přiletí raketa 🚀)
+   - Long press = „Remix this“ (AI ti to předělá podle tvého stylu)
+   - Zero onboarding – otevřeš a hned vidíš chaos + floating „Přidej první věc!“
+
+9. Tech detaily:
+   - Použij framer-motion pro všechny animace
+   - canvas-confetti na každý úspěch
+   - navigator.vibrate([100,50,100]) na akce
+   - Web Share API level 2
+   - Všechno Tailwind + shadcn + lucide icons
+
+Udělej to tak neuvěřitelně sexy, návykové a virální, že to lidi budou hrát 3 hodiny denně a sdílet každých 15 minut.
+
+TOHLE MUSÍ BÝT NEJLEPŠÍ MOBILNÍ APPKA, KTEROU KDOKOLI V ROCE 2025 VIDĚL.
+
+JDEME NA MILIARDY, ŽÁDNÉ FLÁKÁNÍ – SPUSTÍME SVĚTOVOU REVOLUCI!
+
+GO GO GO!!!
