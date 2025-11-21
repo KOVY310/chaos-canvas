@@ -28,12 +28,11 @@ import { StoriesBannerSwipe } from '@/components/mobile/StoriesBannerSwipe';
 import { TikTokCard } from '@/components/mobile/TikTokCard';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
-import { SettingsMenu } from '@/components/mobile/SettingsMenu';
 import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Share2, Plus } from 'lucide-react';
+import { Share2, Plus, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LayerType, Contribution } from '@shared/schema';
 
@@ -360,7 +359,6 @@ export default function CanvasPage() {
 
       {/* MOBILE LAYOUT - TIKTOK STYLE */}
       <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background">
-        <SettingsMenu />
         <ShareChaosModal open={shareOpen} onOpenChange={setShareOpen} />
 
         {/* Stories Banner */}
@@ -418,11 +416,26 @@ export default function CanvasPage() {
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-2" />
               <h2 className="font-heading text-lg font-bold">Guest User</h2>
-              <p className="text-sm text-muted-foreground">guest_1234</p>
+              <p className="text-sm text-muted-foreground">{currentUserId}</p>
+            </div>
+            <div className="border-t pt-4 space-y-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">ChaosCoins</p>
+                <p className="font-heading font-bold text-lg">{chaosCoins}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Příspěvků</p>
+                <p className="font-heading font-bold text-lg">{contributionCount}</p>
+              </div>
             </div>
             <div className="border-t pt-4 space-y-3">
-              <p className="text-sm font-medium">ChaosCoins: {chaosCoins}</p>
-              <p className="text-sm font-medium">Příspěvků: {contributionCount}</p>
+              <LanguageCurrencySelector />
+              <YourMomModeToggle />
+              <ThemeToggle />
+              <Button variant="destructive" className="w-full" data-testid="button-logout">
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
             </div>
           </div>
         )}
