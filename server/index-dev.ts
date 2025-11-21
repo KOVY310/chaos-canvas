@@ -8,6 +8,7 @@ import { createServer as createViteServer, createLogger } from "vite";
 
 import viteConfig from "../vite.config";
 import runApp from "./app";
+import { initScheduledTasks } from "./scheduled-tasks";
 
 export async function setupVite(app: Express, server: Server) {
   const viteLogger = createLogger();
@@ -59,5 +60,8 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 (async () => {
+  // Initialize scheduled tasks (cron jobs)
+  initScheduledTasks();
+  
   await runApp(setupVite);
 })();

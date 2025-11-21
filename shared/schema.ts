@@ -142,8 +142,8 @@ export const insertContributionSchema = createInsertSchema(contributions, {
     style: z.string().optional(),
     text: z.string().optional(),
   }),
-  positionX: z.number(),
-  positionY: z.number(),
+  positionX: z.union([z.string(), z.number()]).transform(val => String(val)),
+  positionY: z.union([z.string(), z.number()]).transform(val => String(val)),
   width: z.number().min(10),
   height: z.number().min(10),
 }).omit({ id: true, createdAt: true, boostCount: true, viewCount: true, marketPrice: true });
@@ -154,7 +154,9 @@ export const insertChaosBubbleSchema = createInsertSchema(chaosBubbles, {
 
 export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true, createdAt: true });
 
-export const insertInvestmentSchema = createInsertSchema(investments).omit({ id: true, createdAt: true, currentValue: true });
+export const insertInvestmentSchema = createInsertSchema(investments, {
+  purchasePrice: z.union([z.string(), z.number()]).transform(val => String(val)),
+}).omit({ id: true, createdAt: true, currentValue: true });
 
 // TypeScript types
 export type InsertUser = z.infer<typeof insertUserSchema>;
