@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useApp } from '@/context/AppContext';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface ChaosLogoProps {
   variant?: 'main' | 'glitch' | 'watermark' | 'national' | 'yo-mama';
@@ -10,6 +10,7 @@ interface ChaosLogoProps {
 
 export function ChaosLogo({ variant = 'main', size = 'md', className = '' }: ChaosLogoProps) {
   const { locale, currency } = useApp();
+  const [error, setError] = useState(false);
   
   // Get country from locale
   const countryCode = useMemo(() => {
@@ -38,12 +39,12 @@ export function ChaosLogo({ variant = 'main', size = 'md', className = '' }: Cha
         'cz': '/logo-cz.png',
         'ph': '/logo-ph.png',
       };
-      return countryLogoMap[topCountry] || '/logo-main.png';
+      return countryLogoMap[topCountry] || '/logo.png';
     }
-    if (variant === 'glitch') return '/logo-glitch.png';
-    if (variant === 'yo-mama') return '/logo-main.png';
-    if (variant === 'watermark') return '/logo-main.png';
-    return '/logo-main.png';
+    if (variant === 'glitch') return '/logo-glitch.gif';
+    if (variant === 'yo-mama') return '/logo.png';
+    if (variant === 'watermark') return '/logo.png';
+    return '/logo.png';
   };
 
   const sizeMap = {
@@ -53,6 +54,26 @@ export function ChaosLogo({ variant = 'main', size = 'md', className = '' }: Cha
   };
 
   const logoPath = getLogoPath();
+
+  // Fallback component when image fails to load
+  if (error) {
+    return (
+      <div
+        className={`
+          relative inline-flex items-center justify-center
+          ${sizeMap[size]}
+          bg-gradient-to-br from-[#FF006E] to-[#00F5FF] rounded-full
+          text-white font-heading font-bold
+          ${className}
+        `}
+        data-testid={`logo-fallback-${variant}`}
+      >
+        <span style={{ fontSize: size === 'sm' ? '1rem' : size === 'md' ? '1.5rem' : '2rem' }}>
+          ∞C
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -68,6 +89,7 @@ export function ChaosLogo({ variant = 'main', size = 'md', className = '' }: Cha
       <img
         src={logoPath}
         alt={variant === 'yo-mama' ? "Yo Mama's Canvas" : 'ChaosCanvas'}
+        onError={() => setError(true)}
         className={`
           w-full h-full object-contain
           ${variant === 'glitch' ? '[filter:drop-shadow(0_0_20px_#FF006E)]' : 'drop-shadow-lg'}
