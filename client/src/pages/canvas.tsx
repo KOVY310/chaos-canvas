@@ -23,8 +23,14 @@ import { FloatingShareButton } from '@/components/viral/FloatingShareButton';
 import { ConfettiEffect } from '@/components/viral/ConfettiEffect';
 import { SaveYourChaosPrompt } from '@/components/SaveYourChaosPrompt';
 import { UserContributionsTab } from '@/components/UserContributionsTab';
+import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
+import { MobileFloatingAdd } from '@/components/mobile/MobileFloatingAdd';
+import { MobileLeagueBanner } from '@/components/mobile/MobileLeagueBanner';
+import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Share2 } from 'lucide-react';
 import type { LayerType, Contribution } from '@shared/schema';
 
 interface Layer {
@@ -249,99 +255,175 @@ export default function CanvasPage() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <>
       <SaveYourChaosPrompt contributionCount={contributionCount} />
       <ConfettiEffect trigger={showConfetti} />
       <FloatingShareButton />
 
-      {/* AI Co-Pilot Panel (Left) */}
-      <AICopilotPanel
-        isCollapsed={isCopilotCollapsed}
-        onToggleCollapse={() => setIsCopilotCollapsed(!isCopilotCollapsed)}
-        onGenerateContent={handleGenerateContent}
-      />
+      {/* DESKTOP LAYOUT */}
+      <div className="hidden md:flex h-screen w-full overflow-hidden">
+        {/* AI Co-Pilot Panel (Left) */}
+        <AICopilotPanel
+          isCollapsed={isCopilotCollapsed}
+          onToggleCollapse={() => setIsCopilotCollapsed(!isCopilotCollapsed)}
+          onGenerateContent={handleGenerateContent}
+        />
 
-      {/* Main Canvas Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <h1 className="font-heading font-bold text-xl text-primary">{t('appName')}</h1>
-            <p className="text-sm text-muted-foreground hidden md:block">{t('tagline')}</p>
+        {/* Main Canvas Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+              <h1 className="font-heading font-bold text-xl text-primary">{t('appName')}</h1>
+              <p className="text-sm text-muted-foreground">{t('tagline')}</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <ExportPanel />
+              <PersonalBubblePanel />
+              <MemeEconomyDashboard
+                stocks={memeStocks}
+                userPortfolio={userPortfolio}
+                onInvest={handleInvest}
+              />
+              <ChaosCoinsDisplay
+                balance={chaosCoins}
+                subscriptionTier={null}
+              />
+              <LanguageCurrencySelector />
+              <ThemeToggle />
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <ExportPanel />
-            <PersonalBubblePanel />
-            <MemeEconomyDashboard
-              stocks={memeStocks}
-              userPortfolio={userPortfolio}
-              onInvest={handleInvest}
-            />
-            <ChaosCoinsDisplay
-              balance={chaosCoins}
-              subscriptionTier={null}
-            />
-            <LanguageCurrencySelector />
-            <ThemeToggle />
-          </div>
+          {/* Tabs for Canvas vs League */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="w-full rounded-none border-b" data-testid="main-tabs">
+              <TabsTrigger value="canvas">Global Canvas</TabsTrigger>
+              <TabsTrigger value="league">National League 🔥</TabsTrigger>
+              <TabsTrigger value="settings">Settings ⚙️</TabsTrigger>
+            </TabsList>
+
+            {/* Canvas Tab */}
+            <TabsContent value="canvas" className="flex-1 overflow-hidden flex flex-col" data-testid="canvas-tab">
+              <LayerSwitcher
+                currentLayer={currentLayer}
+                breadcrumbs={breadcrumbs}
+                onLayerChange={handleLayerChange}
+              />
+
+              <div className="flex-1 overflow-hidden">
+                <InfiniteCanvas
+                  layerId={currentLayer.id}
+                  contributions={canvasContributions}
+                  onAddContribution={handleAddContribution}
+                  isLoading={contributionsLoading}
+                />
+              </div>
+            </TabsContent>
+
+            {/* League Tab */}
+            <TabsContent value="league" className="flex-1 overflow-y-auto p-4 space-y-6" data-testid="league-tab">
+              <DailySeedDisplay />
+              <ChaosTakeoverCountdown />
+              <NationalChaosLeaderboard />
+            </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
+              <h2 className="font-heading text-2xl font-bold">Settings & Profile</h2>
+              <YourMomModeToggle />
+              <div className="pt-4 border-t space-y-4">
+                <ShareButton />
+                <UserContributionsTab />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
-        {/* Tabs for Canvas vs League */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full rounded-none border-b" data-testid="main-tabs">
-            <TabsTrigger value="canvas">Global Canvas</TabsTrigger>
-            <TabsTrigger value="league">National League 🔥</TabsTrigger>
-            <TabsTrigger value="settings">Settings ⚙️</TabsTrigger>
-          </TabsList>
-
-          {/* Canvas Tab */}
-          <TabsContent value="canvas" className="flex-1 overflow-hidden flex flex-col" data-testid="canvas-tab">
-            <LayerSwitcher
-              currentLayer={currentLayer}
-              breadcrumbs={breadcrumbs}
-              onLayerChange={handleLayerChange}
+        {/* Contribution Feed (Right) */}
+        {activeTab === 'canvas' && (
+          <div className="w-80 hidden lg:block">
+            <ContributionFeed
+              contributions={contributionFeed}
+              onBoost={handleBoost}
             />
-
-            <div className="flex-1 overflow-hidden">
-              <InfiniteCanvas
-                layerId={currentLayer.id}
-                contributions={canvasContributions}
-                onAddContribution={handleAddContribution}
-                isLoading={contributionsLoading}
-              />
-            </div>
-          </TabsContent>
-
-          {/* League Tab */}
-          <TabsContent value="league" className="flex-1 overflow-y-auto p-4 space-y-6" data-testid="league-tab">
-            <DailySeedDisplay />
-            <ChaosTakeoverCountdown />
-            <NationalChaosLeaderboard />
-            {/* Trigger confetti when user opens league tab and they see #1 */}
-          </TabsContent>
-
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
-            <h2 className="font-heading text-2xl font-bold">Settings & Profile</h2>
-            <YourMomModeToggle />
-            <div className="pt-4 border-t space-y-4">
-              <ShareButton />
-              <UserContributionsTab />
-            </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
 
-      {/* Contribution Feed (Right) - only show on canvas tab */}
-      {activeTab === 'canvas' && (
-        <div className="w-80 hidden lg:block">
-          <ContributionFeed
-            contributions={contributionFeed}
-            onBoost={handleBoost}
-          />
+      {/* MOBILE LAYOUT */}
+      <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background">
+        {/* Mobile League Banner (Stories style) */}
+        {activeTab === 'league' && <MobileLeagueBanner />}
+
+        {/* Content Area with pb-20 for bottom nav space */}
+        <div className="flex-1 overflow-y-auto pb-20">
+          {activeTab === 'canvas' && (
+            <div className="space-y-0">
+              <div className="sticky top-0 z-20 bg-card border-b border-border p-3">
+                <div className="flex items-center justify-between">
+                  <h1 className="font-heading font-bold text-lg">{t('appName')}</h1>
+                  <div className="flex gap-2">
+                    <ChaosCoinsDisplay balance={chaosCoins} subscriptionTier={null} />
+                    <ThemeToggle />
+                  </div>
+                </div>
+              </div>
+              <div className="h-96 overflow-hidden">
+                <InfiniteCanvas
+                  layerId={currentLayer.id}
+                  contributions={canvasContributions}
+                  onAddContribution={handleAddContribution}
+                  isLoading={contributionsLoading}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'league' && (
+            <div className="p-4 space-y-6">
+              <DailySeedDisplay />
+              <ChaosTakeoverCountdown />
+              <NationalChaosLeaderboard />
+            </div>
+          )}
+
+          {activeTab === 'mine' && (
+            <div className="p-4 space-y-4">
+              <h2 className="font-heading text-lg font-bold">My Contributions</h2>
+              <UserContributionsTab />
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="p-4 space-y-4">
+              <h2 className="font-heading text-lg font-bold">Settings</h2>
+              <YourMomModeToggle />
+              <LanguageCurrencySelector />
+              <div className="pt-4 border-t space-y-4">
+                <Button className="w-full" data-testid="button-share-tiktok">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Sdílet na TikTok
+                </Button>
+                <ShareButton />
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+
+        {/* Mobile Floating UI */}
+        <MobileAICopilotBubble
+          onGenerate={handleGenerateContent}
+          isLoading={generateAIMutation.isPending}
+        />
+        <MobileFloatingAdd
+          onAddContent={handleAddContribution}
+          isLoading={createContributionMutation.isPending}
+        />
+
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    </>
   );
 }
