@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { motion } from "framer-motion";
 
 interface MobileFloatingAddProps {
   onAddContent?: (prompt: string, style: string) => void;
@@ -26,12 +25,12 @@ export function MobileFloatingAdd({ onAddContent, isLoading }: MobileFloatingAdd
   ];
 
   const suggestions = [
-    "A cat wearing sunglasses riding a skateboard 🛹",
-    "Wojak and pepe arguing about crypto 💎",
-    "Doge in space suit on the moon 🚀",
-    "Among us characters in real life 👽",
-    "Minion doing the floss dance 💃",
-    "Rick astley rolling never gonna give you up 🎵",
+    "A cat wearing sunglasses riding a skateboard",
+    "Wojak and pepe arguing about crypto",
+    "Doge in space suit on the moon",
+    "Among us characters in real life",
+    "Minion doing the floss dance",
+    "Rick astley rolling never gonna give you up",
   ];
 
   const handleSubmit = () => {
@@ -45,15 +44,13 @@ export function MobileFloatingAdd({ onAddContent, isLoading }: MobileFloatingAdd
   return (
     <>
       {/* Floating Add Button */}
-      <motion.button
+      <button
         onClick={() => setOpen(true)}
         className="md:hidden fixed bottom-20 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-lg z-40 flex items-center justify-center hover:shadow-xl active:scale-95 transition-all"
         data-testid="button-add-content"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
       >
         <Plus className="w-8 h-8" />
-      </motion.button>
+      </button>
 
       {/* Full Screen Modal */}
       <Dialog open={open} onOpenChange={setOpen}>

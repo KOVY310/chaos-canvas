@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
@@ -24,33 +23,23 @@ export function MobileAICopilotBubble({ onGenerate, isLoading }: MobileAICopilot
   return (
     <>
       {/* Floating Purple Bubble */}
-      <motion.button
+      <button
         onClick={() => setOpen(true)}
-        className="md:hidden fixed bottom-24 left-4 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg z-40 flex items-center justify-center hover:shadow-xl active:scale-90 transition-all"
+        className="md:hidden fixed bottom-24 left-4 w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg z-40 flex items-center justify-center hover:shadow-xl active:scale-90 transition-all animate-bounce"
         data-testid="button-ai-copilot"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        animate={{ 
-          y: [0, -8, 0],
-        }}
-        transition={{ 
-          duration: 2, 
-          repeat: Infinity,
-          repeatType: "loop"
-        }}
       >
         <Sparkles className="w-6 h-6" />
-      </motion.button>
+      </button>
 
-      {/* Drawer for AI Copilot */}
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="md:hidden">
-          <DrawerHeader>
-            <DrawerTitle className="flex items-center gap-2">
+      {/* Dialog for AI Copilot */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="md:hidden w-full max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-500" />
               AI Co-Pilot
-            </DrawerTitle>
-          </DrawerHeader>
+            </DialogTitle>
+          </DialogHeader>
 
           <div className="space-y-4 p-4">
             <Textarea
@@ -92,8 +81,8 @@ export function MobileAICopilotBubble({ onGenerate, isLoading }: MobileAICopilot
               {isLoading ? "Generating..." : "Generate"}
             </Button>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
