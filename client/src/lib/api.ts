@@ -136,3 +136,15 @@ export async function getChaosTakeover(): Promise<any> {
   const response = await apiRequest('GET', '/api/chaos-takeover', undefined);
   return response.json();
 }
+
+// ========== ANONYMOUS AUTH & USER CONTRIBUTIONS ==========
+
+export async function createAnonymousUser(locale: string, countryCode: string, ipAddress?: string): Promise<any> {
+  const response = await apiRequest('POST', '/api/auth/anonymous', { locale, countryCode, ipAddress });
+  return response.json();
+}
+
+export async function getUserContributions(userId: string): Promise<any> {
+  const response = await apiRequest('GET', `/api/contributions/user/${userId}`, undefined);
+  return response.json();
+}

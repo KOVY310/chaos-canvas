@@ -21,6 +21,8 @@ import { YourMomModeToggle } from '@/components/viral/YourMomModeToggle';
 import { ShareButton } from '@/components/viral/ShareButton';
 import { FloatingShareButton } from '@/components/viral/FloatingShareButton';
 import { ConfettiEffect } from '@/components/viral/ConfettiEffect';
+import { SaveYourChaosPrompt } from '@/components/SaveYourChaosPrompt';
+import { UserContributionsTab } from '@/components/UserContributionsTab';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { LayerType, Contribution } from '@shared/schema';
@@ -45,11 +47,14 @@ export default function CanvasPage() {
     regionCode: 'global',
   });
   const [breadcrumbs, setBreadcrumbs] = useState<Layer[]>([currentLayer]);
+  const [contributionCount, setContributionCount] = useState(0);
 
-  // Initialize demo user
+  // Initialize anonymous user
   useEffect(() => {
     if (!currentUserId) {
-      setCurrentUserId('demo-user-1');
+      const guestId = `guest_${Date.now()}`;
+      localStorage.setItem('chaos-guest-id', guestId);
+      setCurrentUserId(guestId);
       setChaosCoins(100);
     }
   }, [currentUserId, setCurrentUserId, setChaosCoins]);
@@ -317,10 +322,11 @@ export default function CanvasPage() {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
-            <h2 className="font-heading text-2xl font-bold">Settings</h2>
+            <h2 className="font-heading text-2xl font-bold">Settings & Profile</h2>
             <YourMomModeToggle />
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t space-y-4">
               <ShareButton />
+              <UserContributionsTab />
             </div>
           </TabsContent>
         </Tabs>

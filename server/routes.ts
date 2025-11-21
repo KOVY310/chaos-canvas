@@ -85,7 +85,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // ========== RATE LIMITING ==========
+  const rateLimits = new Map<string, { count: number; resetTime: number }>();
+  
+  function checkRateLimit(key: string, maxRequests: number = 20, windowMs: number = 300000): boolean {
+    const now = Date.now();
+    const limit = rateLimits.get(key);
+    
+    if (!limit || now > limit.resetTime) {
+      rateLimits.set(key, { count: 1, resetTime: now + windowMs });
+      return true;
+    }
+    
+    if (limit.count < maxRequests) {
+      limit.count++;
+      return true;
+    }
+    return false;
+  }
+
   // ========== USER ROUTES ==========
+  
+  // Anonymous user creation (3 lines magic!)
+  app.post("/api/auth/anonymous", async (req, res) => {
+    try {
+      const { locale, countryCode, ipAddress } = req.body;
+      const user = await storage.createUser({
+        isAnonymous: true,
+        locale: locale || 'en-US',
+        countryCode: countryCode || 'US',
+        username: `guest_${Date.now()}`,
+        password: '',
+      });
+      res.json(user);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
   
   app.post("/api/users", async (req, res) => {
     try {
@@ -104,6 +140,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "User not found" });
       }
       res.json(user);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/contributions/user/:userId", async (req, res) => {
+    try {
+      const contributions = await storage.db.select()
+        .from(storage.db._.users.contributions)
+        .where(storage.db._.users.contributions.userId.equals(req.params.userId));
+      res.json(contributions);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -171,6 +218,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/contributions", async (req, res) => {
     try {
+      const { userId, ipAddress } = req.body;
+      const rateLimitKey = `${userId}:${ipAddress || 'unknown'}`;
+      
+      // Rate limiting: max 20 contributions per 5 minutes
+      if (!checkRateLimit(rateLimitKey, 20, 300000)) {
+        return res.status(429).json({ error: "Too many contributions. Max 20 per 5 minutes." });
+      }
+      
+      // TODO: NSFW filter via HuggingFace (when API key available)
+      // For now, skip - add later with:
+      // const moderation = await fetch('https://api-inference.huggingface.co/models/Falconsai/nsfw_image_detection', ...)
+      
       const contributionData = insertContributionSchema.parse(req.body);
       const contribution = await storage.createContribution(contributionData);
       
