@@ -18,6 +18,9 @@ import { NationalChaosLeaderboard } from '@/components/viral/NationalChaosLeader
 import { ChaosTakeoverCountdown } from '@/components/viral/ChaosTakeoverCountdown';
 import { DailySeedDisplay } from '@/components/viral/DailySeedDisplay';
 import { YourMomModeToggle } from '@/components/viral/YourMomModeToggle';
+import { ShareButton } from '@/components/viral/ShareButton';
+import { FloatingShareButton } from '@/components/viral/FloatingShareButton';
+import { ConfettiEffect } from '@/components/viral/ConfettiEffect';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { LayerType, Contribution } from '@shared/schema';
@@ -30,10 +33,11 @@ interface Layer {
 }
 
 export default function CanvasPage() {
-  const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId } = useApp();
+  const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId, locale } = useApp();
   const { toast } = useToast();
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas'); // 'canvas' | 'league' | 'settings'
+  const [showConfetti, setShowConfetti] = useState(false);
   const [currentLayer, setCurrentLayer] = useState<Layer>({
     id: 'global-1',
     type: 'global',
@@ -241,6 +245,9 @@ export default function CanvasPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
+      <ConfettiEffect trigger={showConfetti} />
+      <FloatingShareButton />
+
       {/* AI Co-Pilot Panel (Left) */}
       <AICopilotPanel
         isCollapsed={isCopilotCollapsed}
@@ -305,12 +312,16 @@ export default function CanvasPage() {
             <DailySeedDisplay />
             <ChaosTakeoverCountdown />
             <NationalChaosLeaderboard />
+            {/* Trigger confetti when user opens league tab and they see #1 */}
           </TabsContent>
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
             <h2 className="font-heading text-2xl font-bold">Settings</h2>
             <YourMomModeToggle />
+            <div className="pt-4 border-t">
+              <ShareButton />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
