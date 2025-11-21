@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Download, Video, Image, Share2 } from 'lucide-react';
 import { SiTiktok, SiInstagram, SiX } from 'react-icons/si';
+import { addWatermarkToCanvas } from '@/components/WatermarkOverlay';
 
 interface ExportPanelProps {
   onExport?: (format: 'image' | 'video', duration?: number, watermark?: boolean) => Promise<void>;

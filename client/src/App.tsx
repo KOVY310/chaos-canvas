@@ -4,8 +4,21 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider, useApp } from "@/context/AppContext";
+import { ChaosLogo } from "@/components/ChaosLogo";
 import CanvasPage from "@/pages/canvas";
 import NotFound from "@/pages/not-found";
+
+// Logo Header with Glitch
+function LogoHeader() {
+  return (
+    <div 
+      className="fixed top-4 left-4 z-40 pointer-events-none"
+      data-testid="logo-header"
+    >
+      <ChaosLogo variant="main" size="sm" />
+    </div>
+  );
+}
 
 // Dev Indicator
 function DevIndicator() {
@@ -59,6 +72,7 @@ function App() {
       <TooltipProvider>
         <AppProvider>
           <Toaster />
+          <LogoHeader />
           <DevIndicator />
           <Router />
         </AppProvider>
