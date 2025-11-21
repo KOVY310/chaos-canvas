@@ -24,10 +24,12 @@ import { ConfettiEffect } from '@/components/viral/ConfettiEffect';
 import { SaveYourChaosPrompt } from '@/components/SaveYourChaosPrompt';
 import { UserContributionsTab } from '@/components/UserContributionsTab';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
-import { StoriesBanner } from '@/components/mobile/StoriesBanner';
-import { MobileTikTokCanvas } from '@/components/mobile/MobileTikTokCanvas';
+import { StoriesBannerSwipe } from '@/components/mobile/StoriesBannerSwipe';
+import { TikTokCard } from '@/components/mobile/TikTokCard';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
+import { SettingsMenu } from '@/components/mobile/SettingsMenu';
+import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -46,9 +48,11 @@ export default function CanvasPage() {
   const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId, locale } = useApp();
   const { toast } = useToast();
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState('canvas'); // 'canvas' | 'league' | 'settings'
+  const [activeTab, setActiveTab] = useState('canvas');
   const [showConfetti, setShowConfetti] = useState(false);
   const [creatorOpen, setCreatorOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentLayer, setCurrentLayer] = useState<Layer>({
     id: 'global-1',
     type: 'global',
@@ -356,18 +360,40 @@ export default function CanvasPage() {
 
       {/* MOBILE LAYOUT - TIKTOK STYLE */}
       <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background">
-        {/* Stories Banner */}
-        {activeTab === 'canvas' && <StoriesBanner />}
+        <SettingsMenu />
+        <ShareChaosModal open={shareOpen} onOpenChange={setShareOpen} />
 
-        {/* Main Content */}
+        {/* Stories Banner */}
+        {activeTab === 'canvas' && <StoriesBannerSwipe />}
+
+        {/* Main Content - Vertical Infinite Feed */}
         {activeTab === 'canvas' && (
-          <>
-            <MobileTikTokCanvas
-              contributions={canvasContributions}
-              onAddContribution={handleAddContribution}
-              isLoading={contributionsLoading}
-            />
-          </>
+          <div className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-20">
+            {canvasContributions.length > 0 ? (
+              canvasContributions.map((contribution, idx) => (
+                <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
+                  <TikTokCard
+                    id={contribution.id}
+                    imageUrl={contribution.imageUrl}
+                    title={contribution.title || 'Chaos'}
+                    author={contribution.userId || 'unknown'}
+                    likes={Math.floor(Math.random() * 10000)}
+                    onLike={() => {
+                      handleBoost(contribution.id);
+                      if ((idx + 1) % 3 === 0) setShareOpen(true);
+                    }}
+                    onReact={(type) => {
+                      if (type === 'fire') handleBoost(contribution.id);
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="h-screen flex items-center justify-center">
+                <p className="text-muted-foreground">Žádný obsah...</p>
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === 'league' && (
@@ -387,30 +413,16 @@ export default function CanvasPage() {
           </div>
         )}
 
-        {activeTab === 'settings' && (
-          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
-            <h2 className="font-heading text-lg font-bold">Nastavení</h2>
-            <YourMomModeToggle />
-            <LanguageCurrencySelector />
-            <ThemeToggle />
-            <div className="pt-4 border-t space-y-4">
-              <Button
-                className="w-full"
-                data-testid="button-share-tiktok"
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: 'ChaosCanvas',
-                      text: 'Prátvě jsem přidal tenhle šílený chaos 😂 chaos.canvas',
-                      url: window.location.href,
-                    });
-                  }
-                }}
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Sdílet na TikTok
-              </Button>
-              <ShareButton />
+        {activeTab === 'profile' && (
+          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-6">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-2" />
+              <h2 className="font-heading text-lg font-bold">Guest User</h2>
+              <p className="text-sm text-muted-foreground">guest_1234</p>
+            </div>
+            <div className="border-t pt-4 space-y-3">
+              <p className="text-sm font-medium">ChaosCoins: {chaosCoins}</p>
+              <p className="text-sm font-medium">Příspěvků: {contributionCount}</p>
             </div>
           </div>
         )}

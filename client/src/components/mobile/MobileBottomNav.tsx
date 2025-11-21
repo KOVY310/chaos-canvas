@@ -1,5 +1,4 @@
-import { LayoutGrid, Flame, User, Settings } from "lucide-react";
-import { useLocation } from "wouter";
+import { LayoutGrid, Flame, User, Home } from "lucide-react";
 
 interface MobileBottomNavProps {
   activeTab: string;
@@ -9,9 +8,9 @@ interface MobileBottomNavProps {
 export function MobileBottomNav({ activeTab, onTabChange }: MobileBottomNavProps) {
   const navItems = [
     { id: 'canvas', label: 'Canvas', icon: LayoutGrid },
-    { id: 'league', label: 'League 🔥', icon: Flame },
+    { id: 'league', label: 'League', icon: Flame },
     { id: 'mine', label: 'Mine', icon: User },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'profile', label: 'Profile', icon: Home },
   ];
 
   return (
