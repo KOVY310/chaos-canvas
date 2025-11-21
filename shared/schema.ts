@@ -43,6 +43,9 @@ export const users = pgTable("users", {
   currency: text("currency").notNull().default('EUR'),
   chaosCoins: integer("chaos_coins").notNull().default(100),
   totalEarned: decimal("total_earned", { precision: 10, scale: 2 }).notNull().default('0'),
+  dailyContributionCount: integer("daily_contribution_count").notNull().default(0),
+  lastContributionReset: timestamp("last_contribution_reset").notNull().defaultNow(),
+  mergedFromAnonymous: varchar("merged_from_anonymous"), // Track which anon account was merged
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionTier: text("subscription_tier"),

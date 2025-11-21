@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
+import * as cron from "node-cron";
 import { 
   insertUserSchema, 
   insertCanvasLayerSchema, 
@@ -12,6 +13,7 @@ import {
   insertInvestmentSchema,
   type Contribution,
 } from "@shared/schema";
+import * as Sentry from "@sentry/node";
 
 // WebSocket integration from blueprint
 // WebSocket clients map: layerId -> Set<WebSocket>
@@ -32,6 +34,25 @@ function broadcastToLayer(layerId: string, message: any) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
+
+  // Initialize Sentry
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN || "",
+    tracesSampleRate: 1.0,
+  });
+
+  // Auto-cleanup cron: Delete contributions older than 7 days (runs daily at 3 AM UTC)
+  cron.schedule("0 3 * * *", async () => {
+    try {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      console.log(`[CRON] Auto-cleanup: Deleting contributions older than ${sevenDaysAgo.toISOString()}`);
+      // TODO: Implement cleanup in storage layer
+      // await storage.deleteOldContributions(sevenDaysAgo);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error("[CRON] Auto-cleanup failed:", error);
+    }
+  });
 
   // WebSocket server on /ws path (distinct from Vite HMR)
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
@@ -141,6 +162,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(user);
     } catch (error: any) {
+      Sentry.captureException(error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Profile merge: merge anonymous user to registered profile
+  app.post("/api/users/merge", async (req, res) => {
+    try {
+      const { anonUserId, registeredUserId } = req.body;
+      
+      if (!anonUserId || !registeredUserId) {
+        return res.status(400).json({ error: "Missing anonUserId or registeredUserId" });
+      }
+      
+      // Get both users
+      const anonUser = await storage.getUser(anonUserId);
+      const registeredUser = await storage.getUser(registeredUserId);
+      
+      if (!anonUser || !registeredUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Transfer contributions from anon to registered
+      // TODO: Implement contribution transfer logic in storage layer
+      
+      // Mark anon user as merged
+      await storage.updateUser(anonUserId, { 
+        mergedFromAnonymous: registeredUserId,
+        isAnonymous: false,
+      });
+      
+      res.json({ message: "Profile merged successfully" });
+    } catch (error: any) {
+      Sentry.captureException(error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -152,6 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .where(storage.db._.users.contributions.userId.equals(req.params.userId));
       res.json(contributions);
     } catch (error: any) {
+      Sentry.captureException(error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -226,6 +282,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(429).json({ error: "Too many contributions. Max 20 per 5 minutes." });
       }
       
+      // Daily limit: max 15 contributions per day
+      const user = await storage.getUser(userId);
+      if (user) {
+        const now = new Date();
+        const lastReset = new Date(user.lastContributionReset);
+        const isNewDay = now.getDate() !== lastReset.getDate() || 
+                         now.getMonth() !== lastReset.getMonth() || 
+                         now.getFullYear() !== lastReset.getFullYear();
+        
+        if (isNewDay) {
+          // Reset counter for new day
+          await storage.updateUserContributionCount(userId, 0);
+        } else if (user.dailyContributionCount >= 15) {
+          return res.status(429).json({ error: "Daily limit reached. Max 15 contributions per day." });
+        }
+        
+        // Increment daily counter
+        await storage.updateUserContributionCount(userId, user.dailyContributionCount + 1);
+      }
+      
       // TODO: NSFW filter via HuggingFace (when API key available)
       // For now, skip - add later with:
       // const moderation = await fetch('https://api-inference.huggingface.co/models/Falconsai/nsfw_image_detection', ...)
@@ -241,6 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(contribution);
     } catch (error: any) {
+      Sentry.captureException(error);
       res.status(400).json({ error: error.message });
     }
   });

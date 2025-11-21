@@ -250,6 +250,7 @@ export default function CanvasPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
+      <SaveYourChaosPrompt contributionCount={contributionCount} />
       <ConfettiEffect trigger={showConfetti} />
       <FloatingShareButton />
 

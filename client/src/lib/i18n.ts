@@ -5,6 +5,12 @@ export const translations = {
   'en-US': {
     appName: 'ChaosCanvas',
     tagline: 'You are the algorithm',
+    rateLimitError: 'Too many contributions (max 20/5min)',
+    dailyLimitError: 'Daily limit reached (max 15/day)',
+    saveYourChaos: 'Save Your Chaos Forever',
+    anonMode: 'guest mode',
+    mergeProfile: 'Merge with Profile',
+    cleanup: 'Auto-deleted old content',
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -49,6 +55,12 @@ export const translations = {
   'cs-CZ': {
     appName: 'ChaosCanvas',
     tagline: 'Ty jsi ten algoritmus',
+    rateLimitError: 'Příliš mnoho příspěvků (max 20/5min)',
+    dailyLimitError: 'Denní limit dosažen (max 15/den)',
+    saveYourChaos: 'Ulož si svůj chaos navždy',
+    anonMode: 'režim hosta',
+    mergeProfile: 'Sloučit s profilem',
+    cleanup: 'Staré obsah automaticky smazán',
     chaosCoins: 'ChaosCoiny',
     layers: {
       global: 'Globální',
