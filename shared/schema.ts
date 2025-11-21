@@ -34,20 +34,23 @@ export type LayerType = typeof LAYER_TYPES[number];
 // Users table with multi-locale and currency support
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  username: text("username").unique(),
+  password: text("password"),
   email: text("email"),
+  isAnonymous: boolean("is_anonymous").notNull().default(true),
+  countryCode: text("country_code").default('US'),
   locale: text("locale").notNull().default('en-US'),
   currency: text("currency").notNull().default('EUR'),
-  chaosCoins: integer("chaos_coins").notNull().default(100), // Starting credits
+  chaosCoins: integer("chaos_coins").notNull().default(100),
   totalEarned: decimal("total_earned", { precision: 10, scale: 2 }).notNull().default('0'),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
-  subscriptionTier: text("subscription_tier"), // null, 'pro', 'god'
-  aiStyle: jsonb("ai_style"), // User's preferred AI generation style
+  subscriptionTier: text("subscription_tier"),
+  aiStyle: jsonb("ai_style"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (table) => ({
   emailIdx: index("users_email_idx").on(table.email),
+  anonIdx: index("users_is_anonymous_idx").on(table.isAnonymous),
 }));
 
 // Canvas layers with geographic hierarchy and geospatial support
