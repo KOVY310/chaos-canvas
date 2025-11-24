@@ -33,6 +33,8 @@ import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble
 import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { CelebrationOverlay } from '@/components/CelebrationOverlay';
 import { AutoShareModal } from '@/components/mobile/AutoShareModal';
+import { GaryVeeOverlay } from '@/components/GaryVeeOverlay';
+import { LiveActivityTicker } from '@/components/LiveActivityTicker';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -63,6 +65,9 @@ export default function CanvasPage() {
   const [activeTab, setActiveTab] = useState('canvas');
   const [showConfetti, setShowConfetti] = useState(false);
   const [creatorOpen, setCreatorOpen] = useState(false);
+  const [showGaryVeeOverlay, setShowGaryVeeOverlay] = useState(true);
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const feedScrollRef = useRef<HTMLDivElement>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentLayer, setCurrentLayer] = useState<Layer>({
@@ -132,39 +137,77 @@ export default function CanvasPage() {
     setPullDistance(0);
   };
 
-  // Seed canvas with starter posts on first load if empty
+  // Seed canvas with 30 FLYING SVÍČKOVÁ VARIATIONS - GARY VEE MODE
   useEffect(() => {
     const seedCanvas = async () => {
       try {
-        // Check if contributions are empty
         const existingContributions = await api.getContributionsByLayer(currentLayer.id);
         if (existingContributions.length === 0) {
-          // Seed with 10-15 starter posts
-          const starterPosts = [
-            { text: 'Nejvtipnější letový kanál 🚁', author: 'ChaosBot' },
-            { text: 'Svíčková ale LÉTÁ 😂', author: 'MemeKing' },
-            { text: 'CESKO_IRL.jpg', author: 'FactChecker' },
-            { text: 'Tenhle obrázek čtyřikrát narušil fyziku', author: 'PhysicsTeacher' },
-            { text: 'Jídlo se ozvučilo', author: 'FoodCritic' },
-            { text: 'Pražané to znají 🇨🇿', author: 'LocalGuide' },
-            { text: 'Jak to fungovalo??? 🤯', author: 'Confused' },
-            { text: 'Masterpiece', author: 'ArtLover' },
-            { text: 'To už viděli všichni v Brně', author: 'BrnoBoy' },
-            { text: 'Věrné reprodukci české kultury 10/10', author: 'Critic' },
-            { text: 'Když babička vaří a ty fotíš', author: 'Photographer' },
-            { text: 'ZÁPAS STOLETÍ KDY?', author: 'SportsFan' },
-            { text: 'Vidím to v každém snu teď', author: 'Dreamer' },
-            { text: 'Toto je umění', author: 'Philosopher' },
-            { text: 'Okamžitě sdílím s mámou', author: 'Grandma' },
+          // 30 VARIATIONS - Flying Svíčková in 30 STYLES
+          const styles = [
+            'Pixel Art Svíčková 8-bit',
+            'Abstract Floating Svíčková',
+            'Neon Cyberpunk Svíčková',
+            'Renaissance Flying Plate',
+            'Minimalist Svíčková',
+            'Surreal Dream Svíčková',
+            'Comic Style Flying Meat',
+            'Oil Painting Svíčková',
+            'Anime Magical Flying Food',
+            'Steampunk Svíčková',
+            'Vaporwave Floating Dish',
+            'Van Gogh Starry Svíčková',
+            'Pop Art Flying Plate',
+            'Horror Movie Svíčková',
+            'Cyberpunk 2077 Svíčková',
+            'Studio Ghibli Flying Meat',
+            'Retro 80s Svíčková',
+            'Glitch Art Floating Plate',
+            'Watercolor Svíčková',
+            'Dark Fantasy Flying Food',
+            'Cartoon Network Style',
+            'Photorealistic Flying Plate',
+            'Disco Fever Svíčková',
+            'Space Odyssey Floating Food',
+            'Medieval Knight Fighting Svíčková',
+            'LOL Gaming Meme Plate',
+            'K-Pop Idol Svíčková',
+            'Bollywood Dancing Plate',
+            'Soccer Goal Celebration Svíčková',
+            'World War II Vintage Flying Meat',
           ];
-          
-          for (let i = 0; i < Math.min(12, starterPosts.length); i++) {
+
+          // Team starter pack (first 3)
+          const starterPack = [
+            { text: '🎨 TÝM: Pixel Art Svíčková 8-bit', author: 'ChaosTeam' },
+            { text: '🎨 TÝM: Abstract Floating Svíčková', author: 'ChaosTeam' },
+            { text: '🎨 TÝM: Neon Cyberpunk Svíčková', author: 'ChaosTeam' },
+          ];
+
+          // Create starter pack first
+          for (let i = 0; i < starterPack.length; i++) {
+            try {
+              await api.createContribution({
+                userId: 'chaosTeam',
+                layerId: currentLayer.id,
+                contentType: 'text',
+                contentData: starterPack[i],
+                positionX: 100 + i * 250,
+                positionY: 150,
+                width: 200,
+                height: 100,
+              });
+            } catch (e) {}
+          }
+
+          // Create all 30 variations
+          for (let i = 3; i < styles.length; i++) {
             try {
               await api.createContribution({
                 userId: 'seed_bot',
                 layerId: currentLayer.id,
                 contentType: 'text',
-                contentData: starterPosts[i],
+                contentData: { text: `🎨 ${styles[i]}`, author: 'ChaosBot' },
                 positionX: Math.random() * 800,
                 positionY: Math.random() * 600,
                 width: 200,
@@ -178,6 +221,24 @@ export default function CanvasPage() {
     };
     seedCanvas();
   }, []);
+
+  // AUTO-SCROLL every 6 seconds while user isn't scrolling
+  useEffect(() => {
+    if (!autoScrollEnabled || !feedScrollRef.current) return;
+
+    const scrollInterval = setInterval(() => {
+      if (feedScrollRef.current && activeTab === 'canvas') {
+        feedScrollRef.current.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+      }
+    }, 6000);
+
+    return () => clearInterval(scrollInterval);
+  }, [autoScrollEnabled, activeTab]);
+
+  // Disable auto-scroll on manual scroll
+  const handleScroll = () => {
+    setAutoScrollEnabled(false);
+  };
 
   // Fetch contributions for current layer
   const { data: contributions = [], isLoading: contributionsLoading } = useQuery({
@@ -481,6 +542,17 @@ export default function CanvasPage() {
 
       {/* MOBILE LAYOUT - STEVE JOBS PERFECTION */}
       <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background relative">
+        {/* GARY VEE OVERLAY - MASSIVE CTA */}
+        {showGaryVeeOverlay && (
+          <GaryVeeOverlay
+            onCTAClick={() => {
+              setShowGaryVeeOverlay(false);
+              setCreatorOpen(true);
+            }}
+            onClose={() => setShowGaryVeeOverlay(false)}
+          />
+        )}
+
         <ShareChaosModal open={shareOpen} onOpenChange={setShareOpen} />
         
         {/* Auto-Share Modal - triggers after contribution */}
@@ -495,12 +567,18 @@ export default function CanvasPage() {
           C
         </div>
 
+        {/* Live Activity Ticker */}
+        {activeTab === 'canvas' && <LiveActivityTicker />}
+
         {/* Stories Banner */}
         {activeTab === 'canvas' && <StoriesBannerSwipe />}
 
         {/* Main Content - Vertical Infinite Feed */}
         {activeTab === 'canvas' && (
-          <div className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide">
+          <div 
+            ref={feedScrollRef}
+            onScroll={handleScroll}
+            className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide">
             {canvasContributions.length > 0 ? (
               canvasContributions.map((contribution, idx) => (
                 <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
