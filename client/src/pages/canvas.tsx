@@ -154,82 +154,8 @@ export default function CanvasPage() {
           });
         }
 
-        const existingContributions = await api.getContributionsByLayer(currentLayer.id);
-        if (existingContributions.length === 0) {
-          // 30 VARIATIONS - Flying Svíčková in 30 STYLES
-          const styles = [
-            'Pixel Art Svíčková 8-bit',
-            'Abstract Floating Svíčková',
-            'Neon Cyberpunk Svíčková',
-            'Renaissance Flying Plate',
-            'Minimalist Svíčková',
-            'Surreal Dream Svíčková',
-            'Comic Style Flying Meat',
-            'Oil Painting Svíčková',
-            'Anime Magical Flying Food',
-            'Steampunk Svíčková',
-            'Vaporwave Floating Dish',
-            'Van Gogh Starry Svíčková',
-            'Pop Art Flying Plate',
-            'Horror Movie Svíčková',
-            'Cyberpunk 2077 Svíčková',
-            'Studio Ghibli Flying Meat',
-            'Retro 80s Svíčková',
-            'Glitch Art Floating Plate',
-            'Watercolor Svíčková',
-            'Dark Fantasy Flying Food',
-            'Cartoon Network Style',
-            'Photorealistic Flying Plate',
-            'Disco Fever Svíčková',
-            'Space Odyssey Floating Food',
-            'Medieval Knight Fighting Svíčková',
-            'LOL Gaming Meme Plate',
-            'K-Pop Idol Svíčková',
-            'Bollywood Dancing Plate',
-            'Soccer Goal Celebration Svíčková',
-            'World War II Vintage Flying Meat',
-          ];
-
-          // Team starter pack (first 3)
-          const starterPack = [
-            { text: '🎨 TÝM: Pixel Art Svíčková 8-bit', author: 'ChaosTeam' },
-            { text: '🎨 TÝM: Abstract Floating Svíčková', author: 'ChaosTeam' },
-            { text: '🎨 TÝM: Neon Cyberpunk Svíčková', author: 'ChaosTeam' },
-          ];
-
-          // Create starter pack first
-          for (let i = 0; i < starterPack.length; i++) {
-            try {
-              await api.createContribution({
-                userId: 'chaosTeam',
-                layerId: currentLayer.id,
-                contentType: 'text',
-                contentData: starterPack[i],
-                positionX: 100 + i * 250,
-                positionY: 150,
-                width: 200,
-                height: 100,
-              });
-            } catch (e) {}
-          }
-
-          // Create all 30 variations
-          for (let i = 3; i < styles.length; i++) {
-            try {
-              await api.createContribution({
-                userId: 'seed_bot',
-                layerId: currentLayer.id,
-                contentType: 'text',
-                contentData: { text: `🎨 ${styles[i]}`, author: 'ChaosBot' },
-                positionX: Math.random() * 800,
-                positionY: Math.random() * 600,
-                width: 200,
-                height: 100,
-              });
-            } catch (e) {}
-          }
-          queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-        }
+        // Skip auto-seeding - users can add content via Creator button
+        // This avoids foreign key constraint issues with non-existent seed users
       } catch (e) {}
     };
     seedCanvas();
