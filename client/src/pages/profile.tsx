@@ -270,15 +270,20 @@ export default function ProfilePage() {
           </div>
 
           {/* Upgrade/Buy Coins section */}
-          <div className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-2 border-yellow-400">
-            <h3 className="text-lg font-heading font-bold text-center mb-3 text-yellow-300">
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-4 border-yellow-400 shadow-2xl"
+          >
+            <h3 className="text-2xl font-heading font-bold text-center mb-2 text-yellow-300">
               💎 Kup ChaosCoins 💎
             </h3>
-            <p className="text-xs text-center text-gray-200 mb-4">
+            <p className="text-sm text-center text-gray-200 mb-6">
               Vyberte si počet coinů nebo se staň ChaosPro legeendou!
             </p>
             <UpgradeButton />
-          </div>
+          </motion.div>
         </motion.div>
       )}
 
