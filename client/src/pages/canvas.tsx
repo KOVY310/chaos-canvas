@@ -752,6 +752,11 @@ export default function CanvasPage() {
           activeTab={activeTab} 
           onTabChange={(tab) => {
             setShowGaryVeeOverlay(false);
+            // NAVIGATE TO PROPER ROUTES
+            if (tab === 'canvas') setLocation('/canvas');
+            else if (tab === 'league') setLocation('/league');
+            else if (tab === 'profile') setLocation('/profile');
+            else if (tab === 'mine') setLocation('/'); // mine is on canvas page
             setActiveTab(tab);
           }}
           onCreateClick={() => {
