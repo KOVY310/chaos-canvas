@@ -32,7 +32,7 @@ import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Share2, Plus, LogOut } from 'lucide-react';
+import { Share2, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LayerType, Contribution } from '@shared/schema';
 
@@ -411,7 +411,7 @@ export default function CanvasPage() {
 
         {activeTab === 'mine' && (
           <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
-            <h2 className="font-heading text-lg font-bold">Můj Chaos</h2>
+            <h2 className="font-heading text-lg font-bold">{t('profile.myContributions')}</h2>
             <UserContributionsTab />
           </div>
         )}
@@ -420,16 +420,16 @@ export default function CanvasPage() {
           <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-6">
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-2" />
-              <h2 className="font-heading text-lg font-bold">Guest User</h2>
+              <h2 className="font-heading text-lg font-bold">{t('profile.guestUser')}</h2>
               <p className="text-sm text-muted-foreground">{currentUserId}</p>
             </div>
             <div className="border-t pt-4 space-y-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">ChaosCoins</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('profile.chaosCoins')}</p>
                 <p className="font-heading font-bold text-lg">{chaosCoins}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Příspěvků</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('profile.contributions')}</p>
                 <p className="font-heading font-bold text-lg">{contributionCount}</p>
               </div>
             </div>
@@ -439,7 +439,7 @@ export default function CanvasPage() {
               <ThemeToggle />
               <Button variant="destructive" className="w-full" data-testid="button-logout">
                 <LogOut className="w-4 h-4 mr-2" />
-                Logout
+                {t('profile.logout')}
               </Button>
             </div>
           </div>
@@ -453,30 +453,20 @@ export default function CanvasPage() {
           isLoading={createContributionMutation.isPending}
         />
 
-        {/* Floating Rainbow Add Button (86px, 100% centered, breathing animation) */}
-        <motion.button
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={() => {
-            setCreatorOpen(true);
-            if ('vibrate' in navigator) navigator.vibrate([20, 10, 20]);
-          }}
-          className="md:hidden fixed bottom-28 left-1/2 -translate-x-1/2 w-24 h-24 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white z-40 flex items-center justify-center shadow-lg breathe"
-          data-testid="button-create-floating"
-        >
-          <Plus className="w-12 h-12" />
-        </motion.button>
-
         {/* AI Co-Pilot Bubble */}
         <MobileAICopilotBubble
           onGenerate={handleGenerateContent}
           isLoading={generateAIMutation.isPending}
         />
 
-        {/* Bottom Navigation */}
-        <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Bottom Navigation with + button */}
+        <MobileBottomNav 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab}
+          onCreateClick={() => {
+            setCreatorOpen(true);
+          }}
+        />
       </div>
     </>
   );

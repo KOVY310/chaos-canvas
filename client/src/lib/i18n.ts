@@ -5,6 +5,20 @@ export const translations = {
   'en-US': {
     appName: 'ChaosCanvas',
     tagline: 'You are the algorithm',
+    nav: {
+      canvas: 'Canvas',
+      league: 'League',
+      mine: 'Mine',
+      profile: 'Profile',
+      create: 'Create',
+    },
+    profile: {
+      guestUser: 'Guest User',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Contributions',
+      logout: 'Logout',
+      myContributions: 'My Contributions',
+    },
     rateLimitError: 'Too many contributions (max 20/5min)',
     dailyLimitError: 'Daily limit reached (max 15/day)',
     saveYourChaos: 'Save Your Chaos Forever',
@@ -55,6 +69,20 @@ export const translations = {
   'cs-CZ': {
     appName: 'ChaosCanvas',
     tagline: 'Ty jsi ten algoritmus',
+    nav: {
+      canvas: 'Plátno',
+      league: 'Liga',
+      mine: 'Můj',
+      profile: 'Profil',
+      create: 'Vytvořit',
+    },
+    profile: {
+      guestUser: 'Hostující uživatel',
+      chaosCoins: 'ChaosCoiny',
+      contributions: 'Příspěvky',
+      logout: 'Odhlásit se',
+      myContributions: 'Můj Chaos',
+    },
     rateLimitError: 'Příliš mnoho příspěvků (max 20/5min)',
     dailyLimitError: 'Denní limit dosažen (max 15/den)',
     saveYourChaos: 'Ulož si svůj chaos navždy',
@@ -105,6 +133,20 @@ export const translations = {
   'de-DE': {
     appName: 'ChaosCanvas',
     tagline: 'Du bist der Algorithmus',
+    nav: {
+      canvas: 'Leinwand',
+      league: 'Liga',
+      mine: 'Meine',
+      profile: 'Profil',
+      create: 'Erstellen',
+    },
+    profile: {
+      guestUser: 'Gastbenutzer',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Beiträge',
+      logout: 'Abmelden',
+      myContributions: 'Mein Chaos',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -149,6 +191,20 @@ export const translations = {
   'sk-SK': {
     appName: 'ChaosCanvas',
     tagline: 'Ty si ten algoritmus',
+    nav: {
+      canvas: 'Plátno',
+      league: 'Liga',
+      mine: 'Moje',
+      profile: 'Profil',
+      create: 'Vytvoriť',
+    },
+    profile: {
+      guestUser: 'Hosťujúci používateľ',
+      chaosCoins: 'ChaosCoiny',
+      contributions: 'Príspevky',
+      logout: 'Odhlásiť sa',
+      myContributions: 'Môj Chaos',
+    },
     chaosCoins: 'ChaosCoiny',
     layers: {
       global: 'Globálne',
@@ -193,6 +249,20 @@ export const translations = {
   'pl-PL': {
     appName: 'ChaosCanvas',
     tagline: 'Ty jesteś algorytmem',
+    nav: {
+      canvas: 'Płótno',
+      league: 'Liga',
+      mine: 'Moje',
+      profile: 'Profil',
+      create: 'Utwórz',
+    },
+    profile: {
+      guestUser: 'Użytkownik gościnny',
+      chaosCoins: 'ChaosCoiny',
+      contributions: 'Wkład',
+      logout: 'Wyloguj się',
+      myContributions: 'Mój Chaos',
+    },
     chaosCoins: 'ChaosCoiny',
     layers: {
       global: 'Globalne',
@@ -237,6 +307,20 @@ export const translations = {
   'es-ES': {
     appName: 'ChaosCanvas',
     tagline: 'Tú eres el algoritmo',
+    nav: {
+      canvas: 'Lienzo',
+      league: 'Liga',
+      mine: 'Mío',
+      profile: 'Perfil',
+      create: 'Crear',
+    },
+    profile: {
+      guestUser: 'Usuario Invitado',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Contribuciones',
+      logout: 'Cerrar sesión',
+      myContributions: 'Mi Caos',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -281,6 +365,20 @@ export const translations = {
   'fr-FR': {
     appName: 'ChaosCanvas',
     tagline: 'Tu es l\'algorithme',
+    nav: {
+      canvas: 'Canevas',
+      league: 'Ligue',
+      mine: 'Mien',
+      profile: 'Profil',
+      create: 'Créer',
+    },
+    profile: {
+      guestUser: 'Utilisateur Invité',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Contributions',
+      logout: 'Déconnexion',
+      myContributions: 'Mon Chaos',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Mondial',
@@ -325,6 +423,20 @@ export const translations = {
   'fil-PH': {
     appName: 'ChaosCanvas',
     tagline: 'Ikaw ang algorithm',
+    nav: {
+      canvas: 'Canvas',
+      league: 'Liga',
+      mine: 'Akin',
+      profile: 'Profile',
+      create: 'Lumikha',
+    },
+    profile: {
+      guestUser: 'Guest User',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Kontribusyon',
+      logout: 'Logout',
+      myContributions: 'Maging Kontribusyon',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Pandaigdig',
@@ -369,6 +481,20 @@ export const translations = {
   'id-ID': {
     appName: 'ChaosCanvas',
     tagline: 'Anda adalah algoritma',
+    nav: {
+      canvas: 'Kanvas',
+      league: 'Liga',
+      mine: 'Milik',
+      profile: 'Profil',
+      create: 'Buat',
+    },
+    profile: {
+      guestUser: 'Pengguna Tamu',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Kontribusi',
+      logout: 'Logout',
+      myContributions: 'Chaos Saya',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -413,6 +539,20 @@ export const translations = {
   'pt-BR': {
     appName: 'ChaosCanvas',
     tagline: 'Você é o algoritmo',
+    nav: {
+      canvas: 'Tela',
+      league: 'Liga',
+      mine: 'Meu',
+      profile: 'Perfil',
+      create: 'Criar',
+    },
+    profile: {
+      guestUser: 'Usuário Convidado',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Contribuições',
+      logout: 'Logout',
+      myContributions: 'Meu Caos',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -457,6 +597,20 @@ export const translations = {
   'tr-TR': {
     appName: 'ChaosCanvas',
     tagline: 'Sen algoritmasın',
+    nav: {
+      canvas: 'Tuval',
+      league: 'Liga',
+      mine: 'Benim',
+      profile: 'Profil',
+      create: 'Oluştur',
+    },
+    profile: {
+      guestUser: 'Konuk Kullanıcı',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Katkılar',
+      logout: 'Çıkış',
+      myContributions: 'Benim Kaosim',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Global',
@@ -501,6 +655,20 @@ export const translations = {
   'vi-VN': {
     appName: 'ChaosCanvas',
     tagline: 'Bạn là thuật toán',
+    nav: {
+      canvas: 'Bảng vẽ',
+      league: 'Giải đấu',
+      mine: 'Của tôi',
+      profile: 'Hồ sơ',
+      create: 'Tạo',
+    },
+    profile: {
+      guestUser: 'Người dùng khách',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Đóng góp',
+      logout: 'Đăng xuất',
+      myContributions: 'Chaos của tôi',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Toàn cầu',
