@@ -463,13 +463,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const errorText = await hfResponse.text();
         console.error(`[AI] Both HF APIs failed: ${hfResponse.status}`, errorText);
         
-        // Fallback to placeholder only if both APIs fail
-        const imageUrl = `https://placehold.co/512x512/6366f1/white?text=${encodeURIComponent(prompt.substring(0, 25))}`;
+        // Fallback to rich image placeholder using unsplash random image
+        // Uses search to get relevant images based on prompt
+        const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
+        const imageUrl = `https://source.unsplash.com/512x512/?${encodeURIComponent(searchTerm)},art,meme,creative`;
         return res.json({
           url: imageUrl,
           prompt,
           style,
-          note: "Using placeholder - HF APIs temporarily unavailable",
+          note: "Using creative image placeholder - AI generation temporarily unavailable",
         });
       }
 
