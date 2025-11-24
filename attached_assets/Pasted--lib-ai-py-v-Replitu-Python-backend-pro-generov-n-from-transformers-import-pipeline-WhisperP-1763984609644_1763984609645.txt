@@ -1,0 +1,45 @@
+# lib/ai.py (v Replitu – Python backend pro generování)
+from transformers import pipeline, WhisperProcessor, WhisperForConditionalGeneration
+import torch
+from diffusers import StableDiffusion3Pipeline
+from open_sora import OpenSoraModel  # pip install opensora
+import io
+import soundfile as sf
+
+# 1. Voice → Text (Whisper – free, self-host)
+def voice_to_text(audio_file):
+    processor = WhisperProcessor.from_pretrained("openai/whisper-large-v3")
+    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-large-v3")
+    pipe = pipeline("automatic-speech-recognition", model="openai/whisper-large-v3")
+    result = pipe(audio_file)
+    return result["text"]  # Vrátí text z hlasu (podporuje CZ/SK/FIL/ID/TR)
+
+# 2. Text → Image (Stable Diffusion 3.5 – free, self-host)
+def text_to_image(prompt, style="meme"):
+    pipe = StableDiffusion3Pipeline.from_pretrained("stabilityai/stable-diffusion-3.5-large", torch_dtype=torch.float16)
+    pipe = pipe.to("cuda" if torch.cuda.is_available() else "cpu")  # Replit GPU
+    image = pipe(prompt + f", {style} style, viral tiktok").images[0]
+    return image  # Vrátí PIL image pro upload do canvasu
+
+# 3. Text → Video (Open-Sora – free, self-host)
+def text_to_video(prompt, duration=15):
+    model = OpenSoraModel.from_pretrained("hpcai-tech/Open-Sora-v1.3")
+    video = model.generate(prompt, duration_seconds=duration)
+    return video  # Vrátí MP4 bytes
+
+# Multimodální flow (voice/text → image/video)
+def generate_chaos(input_type, input_data, style="meme"):
+    if input_type == "voice":
+        text = voice_to_text(input_data)
+    else:
+        text = input_data
+    image = text_to_image(text, style)
+    video = text_to_video(text, 15)  # Jen pro Pro uživatele
+    return {"image": image, "video": video, "text": text}
+
+# Test na Replitu
+if __name__ == "__main__":
+    # Test voice (nahraď audio_file souborem)
+    print(voice_to_text("test_audio.wav"))
+    # Test image
+    print(text_to_image("Létající svíčková nad Prahou", "meme"))
