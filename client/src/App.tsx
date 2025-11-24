@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider, useApp } from "@/context/AppContext";
 import { ChaosLogo } from "@/components/ChaosLogo";
 import CanvasPage from "@/pages/canvas";
+import ProfilePage from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
 // Logo Header with Glitch
@@ -61,6 +62,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={CanvasPage} />
+      <Route path="/profile" component={ProfilePage} />
       <Route component={NotFound} />
     </Switch>
   );

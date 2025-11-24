@@ -713,6 +713,20 @@ export const translations = {
   'ja-JP': {
     appName: 'ChaosCanvas',
     tagline: 'あなたがアルゴリズムです',
+    nav: {
+      canvas: 'キャンバス',
+      league: 'リーグ',
+      mine: 'マイ',
+      profile: 'プロフィール',
+      create: '作成',
+    },
+    profile: {
+      guestUser: 'ゲストユーザー',
+      chaosCoins: 'ChaosCoins',
+      contributions: '貢献',
+      logout: 'ログアウト',
+      myContributions: 'マイカオス',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'グローバル',
@@ -757,6 +771,20 @@ export const translations = {
   'ko-KR': {
     appName: 'ChaosCanvas',
     tagline: '당신이 알고리즘입니다',
+    nav: {
+      canvas: '캔버스',
+      league: '리그',
+      mine: '마이',
+      profile: '프로필',
+      create: '만들기',
+    },
+    profile: {
+      guestUser: '게스트 사용자',
+      chaosCoins: 'ChaosCoins',
+      contributions: '기여',
+      logout: '로그아웃',
+      myContributions: '마이 카오스',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: '글로벌',
@@ -801,6 +829,20 @@ export const translations = {
   'ru-RU': {
     appName: 'ChaosCanvas',
     tagline: 'Ты - алгоритм',
+    nav: {
+      canvas: 'Холст',
+      league: 'Лига',
+      mine: 'Мое',
+      profile: 'Профиль',
+      create: 'Создать',
+    },
+    profile: {
+      guestUser: 'Гостевой пользователь',
+      chaosCoins: 'ChaosCoins',
+      contributions: 'Взносы',
+      logout: 'Выход',
+      myContributions: 'Мой Хаос',
+    },
     chaosCoins: 'ChaosCoins',
     layers: {
       global: 'Глобальный',

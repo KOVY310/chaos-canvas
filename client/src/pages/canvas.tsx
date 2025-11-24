@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { useApp } from '@/context/AppContext';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { queryClient } from '@/lib/queryClient';
@@ -44,6 +45,7 @@ interface Layer {
 }
 
 export default function CanvasPage() {
+  const [, setLocation] = useLocation();
   const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId, locale } = useApp();
   const { toast } = useToast();
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
@@ -462,7 +464,13 @@ export default function CanvasPage() {
         {/* Bottom Navigation with + button */}
         <MobileBottomNav 
           activeTab={activeTab} 
-          onTabChange={setActiveTab}
+          onTabChange={(tab) => {
+            if (tab === 'profile') {
+              setLocation('/profile');
+            } else {
+              setActiveTab(tab);
+            }
+          }}
           onCreateClick={() => {
             setCreatorOpen(true);
           }}
