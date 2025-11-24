@@ -86,20 +86,12 @@ export function GaryVeeOverlay({ onCTAClick, onClose }: GaryVeeOverlayProps) {
           {/* CTA Button - MASSIVE */}
           <Button
             onClick={onCTAClick}
-            className="w-full h-16 text-xl font-heading font-black bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-2xl mb-4"
+            className="w-full h-16 text-xl font-heading font-black bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-2xl"
             data-testid="button-add-version-gary"
           >
             <Plus className="w-6 h-6 mr-2" />
             PŘIDEJ SVŮJ CHAOS!
           </Button>
-
-          {/* Dismiss hint */}
-          <button
-            onClick={onClose}
-            className="w-full text-sm text-gray-400 hover:text-gray-200 transition"
-          >
-            Ne, teď ne
-          </button>
         </div>
       </motion.div>
     </motion.div>
