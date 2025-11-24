@@ -651,18 +651,18 @@ export default function CanvasPage() {
         {activeTab === 'canvas' && <StoriesBannerSwipe />}
 
         {/* Main Content - Vertical Infinite Feed */}
-        {activeTab === 'canvas' && (
+        {activeTab === 'canvas' ? (
           <div 
             ref={feedScrollRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide">
-            {canvasContributions.length > 0 ? (
+            className="flex-1 w-full overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide bg-background">
+            {canvasContributions && canvasContributions.length > 0 ? (
               canvasContributions.map((contribution, idx) => {
                 const contentData = contribution.contentData as any;
                 const imageUrl = contentData?.url || '';
                 const title = contentData?.prompt || 'Chaos';
                 return (
-                  <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
+                  <div key={contribution.id} className="snap-center h-screen w-full flex-shrink-0">
                     <TikTokCard
                       id={contribution.id}
                       imageUrl={imageUrl}
@@ -681,12 +681,14 @@ export default function CanvasPage() {
                 );
               })
             ) : (
-              <div className="h-screen flex items-center justify-center">
-                <p className="text-muted-foreground">Žádný obsah...</p>
+              <div className="h-screen w-full flex items-center justify-center bg-background">
+                <p className="text-muted-foreground text-center px-4">
+                  {contributionsLoading ? 'Načítám obsah...' : 'Zatím žádný obsah. Klikni na + a přidej svůj chaos!'}
+                </p>
               </div>
             )}
           </div>
-        )}
+        ) : null}
 
         {activeTab === 'league' && (
           <div className="flex-1 overflow-y-auto pb-20">
