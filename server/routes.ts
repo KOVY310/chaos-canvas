@@ -432,14 +432,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[AI] Generating: "${fullPrompt}"`);
 
-      // Use FREE Hugging Face Inference API - FLUX.1-schnell (ultra-fast, no limits!)
+      // Use Hugging Face free inference API
+      const hfApiKey = process.env.HUGGING_FACE_API_KEY;
+      const hfHeaders: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (hfApiKey) {
+        hfHeaders["Authorization"] = `Bearer ${hfApiKey}`;
+      }
+
+      // Try FLUX.1-schnell via free Hugging Face inference
       let hfResponse = await fetch(
         "https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: hfHeaders,
           body: JSON.stringify({ inputs: fullPrompt }),
         }
       );
@@ -451,9 +458,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           "https://router.huggingface.co/models/runwayml/stable-diffusion-v1-5",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: hfHeaders,
             body: JSON.stringify({ inputs: fullPrompt }),
           }
         );
