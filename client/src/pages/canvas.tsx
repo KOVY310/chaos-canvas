@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useApp } from '@/context/AppContext';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { queryClient } from '@/lib/queryClient';
 import * as api from '@/lib/api';
+import { sounds } from '@/lib/sounds';
 import { InfiniteCanvas, type CanvasContribution } from '@/components/InfiniteCanvas';
 import { AICopilotPanel } from '@/components/AICopilotPanel';
 import { LayerSwitcher } from '@/components/LayerSwitcher';
@@ -30,6 +31,7 @@ import { TikTokCard } from '@/components/mobile/TikTokCard';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
 import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
+import { CelebrationOverlay } from '@/components/CelebrationOverlay';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -48,6 +50,12 @@ export default function CanvasPage() {
   const [, setLocation] = useLocation();
   const { t, chaosCoins, setChaosCoins, currentUserId, setCurrentUserId, locale } = useApp();
   const { toast } = useToast();
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const pullStartY = useRef(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isCelebrating, setIsCelebrating] = useState(false);
+  const [celebrationText, setCelebrationText] = useState('');
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -72,6 +80,45 @@ export default function CanvasPage() {
       setChaosCoins(100);
     }
   }, [currentUserId, setCurrentUserId, setChaosCoins]);
+
+  // Micro-confetti every 15 seconds (ADHD engagement)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 800);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Pull-to-refresh handler
+  const handleTouchStart = (e: React.TouchEvent) => {
+    pullStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!canvasRef.current) return;
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - pullStartY.current;
+    
+    if (distance > 0 && canvasRef.current.scrollTop === 0) {
+      setIsPulling(true);
+      setPullDistance(Math.min(distance / 2, 100)); // Max 100px visual feedback
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > 60) {
+      // Trigger refresh
+      sounds.whoosh();
+      queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer'] });
+      toast({
+        title: '🌀 Reloading your chaos...',
+        duration: 2000,
+      });
+    }
+    setIsPulling(false);
+    setPullDistance(0);
+  };
 
   // Fetch contributions for current layer
   const { data: contributions = [], isLoading: contributionsLoading } = useQuery({

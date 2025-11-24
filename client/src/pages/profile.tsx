@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
-import { Share2, LogOut, Zap } from 'lucide-react';
+import { Share2, LogOut, Zap, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { LoginModal } from '@/components/mobile/LoginModal';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
@@ -25,7 +25,25 @@ export default function ProfilePage() {
   const [, setLocation] = useLocation();
   const { t, currentUserId, chaosCoins } = useApp();
   const [loginOpen, setLoginOpen] = useState(false);
+  const [liveFollowers, setLiveFollowers] = useState(4206900);
+  const [glitchOffset, setGlitchOffset] = useState(0);
   const isGuest = currentUserId?.startsWith('guest_');
+
+  // Live follower counter - increments every 10s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveFollowers(prev => prev + Math.floor(Math.random() * 50000) + 10000);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Glitch effect animation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGlitchOffset(Math.random() * 3);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Mock data for demo
   const profile: UserProfile = {
@@ -36,7 +54,7 @@ export default function ProfilePage() {
     globalRank: 69,
     countryRank: 420,
     country: 'CZ',
-    followers: 4206900,
+    followers: liveFollowers,
     isAuthenticated: !isGuest,
   };
 
@@ -58,23 +76,32 @@ export default function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         className="relative px-4 pt-8 pb-6 text-center"
       >
-        {/* Neon Avatar - Pulsing Rainbow Glow */}
+        {/* Neon Avatar - Pulsing Rainbow Glow (140px + extra strong glow) */}
         <motion.div
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 3, repeat: Infinity }}
           className="relative inline-block mb-4"
         >
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-cyan-500 p-1 neon-glow">
+          <div className="w-44 h-44 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-cyan-500 p-1 neon-glow shadow-2xl"
+            style={{
+              boxShadow: '0 0 40px rgba(236, 72, 153, 0.6), 0 0 80px rgba(136, 39, 201, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1)'
+            }}>
             <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
-              <span className="text-5xl">🐱</span>
+              <span className="text-7xl">🐱</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Username */}
-        <h1 className="font-heading text-4xl font-bold text-white mb-2">
+        {/* Username - with glitch effect */}
+        <motion.h1 
+          animate={{ x: glitchOffset }}
+          className="font-heading text-5xl font-bold text-white mb-2 transition-transform duration-300"
+          style={{
+            textShadow: glitchOffset > 1.5 ? '2px 2px 0px rgba(236, 72, 153, 0.8), -2px -2px 0px rgba(0, 245, 255, 0.8)' : 'none'
+          }}
+        >
           {profile.username}
-        </h1>
+        </motion.h1>
 
         {/* Country Flag + Rank */}
         <div className="flex items-center justify-center gap-3 text-cyan-300 mb-4">
@@ -83,15 +110,22 @@ export default function ProfilePage() {
           <span className="font-mono text-sm">#{profile.globalRank} Global</span>
         </div>
 
-        {/* Social Proof - Fake Followers Growing */}
-        <motion.p
+        {/* Social Proof - Live Followers Counter */}
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-sm text-pink-300 font-bold mb-6"
+          className="mb-6"
         >
-          📊 Právě teď sleduje {(profile.followers / 1000000).toFixed(1)}M lidí tvůj chaos
-        </motion.p>
+          <motion.p
+            key={liveFollowers}
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 0.3 }}
+            className="text-sm text-pink-300 font-bold"
+          >
+            📊 Právě teď sleduje {(profile.followers / 1000000).toFixed(1)}M lidí tvůj chaos
+          </motion.p>
+        </motion.div>
       </motion.div>
 
       {/* BIG STATS - Animated Numbers */}
@@ -167,26 +201,70 @@ export default function ProfilePage() {
         </motion.div>
       )}
 
-      {/* UPGRADE BUTTON - Massive CTA (only for guests) */}
+      {/* UPGRADE BUTTON - Massive CTA with Sparkles (only for guests) */}
       {isGuest && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="px-4 mb-8"
+          className="px-4 mb-8 relative"
         >
+          {/* Sparkle effect on hover */}
           <motion.button
             onClick={() => setLoginOpen(true)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-heading font-bold py-4 rounded-3xl shadow-lg neon-glow transition-all"
+            whileHover={{ scale: 1.05, rotate: 1 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white font-heading font-bold py-4 rounded-3xl shadow-2xl neon-glow transition-all relative overflow-hidden group"
             data-testid="button-upgrade-legend"
           >
-            🚀 Povýšit na Chaos Legendu
+            {/* Animated sparkles on hover */}
+            <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100">
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ 
+                    y: [0, -20],
+                    opacity: [1, 0]
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    repeat: Infinity
+                  }}
+                  className="absolute text-lg"
+                  style={{
+                    left: `${25 + i * 20}%`,
+                    bottom: '50%',
+                  }}
+                >
+                  ✨
+                </motion.div>
+              ))}
+            </motion.div>
+            
+            <span className="relative z-10">🚀 Povýšit na Chaos Legendu</span>
           </motion.button>
           <p className="text-xs text-center text-gray-400 mt-2">
             Přihlaste se s Google/Apple/TikTok aby jste měli cool jméno
           </p>
+        </motion.div>
+      )}
+
+      {/* AUTHENTICATED VIEW - After login show Chaos God badge */}
+      {!isGuest && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="px-4 mb-8 text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            className="inline-block mb-3"
+          >
+            👑
+          </motion.div>
+          <p className="text-sm font-heading font-bold text-yellow-300">Chaos God</p>
         </motion.div>
       )}
 
