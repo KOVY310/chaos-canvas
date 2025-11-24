@@ -1,0 +1,47 @@
+anifest: Line: 1, column: 1, Syntax error.Understand this error
+canvas:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">Understand this warning
+api/contributions:1  Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+@radix-ui_react-dialog.js?v=e8dac3ab:342 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ @radix-ui_react-dialog.js?v=e8dac3ab:342Understand this warning
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+api/contributions/user/guest_1763988629401:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+UserContributionsTab.tsx:13  GET https://57ea5bc9-b3d8-414b-a900-b6ddfd4dc58d-00-10mussz32kas0.spock.replit.dev/api/contributions/user/guest_1763988629401 500 (Internal Server Error)
+queryFn @ UserContributionsTab.tsx:13
+fetchFn @ @tanstack_react-query.js?v=e8dac3ab:840
+run @ @tanstack_react-query.js?v=e8dac3ab:494
+start @ @tanstack_react-query.js?v=e8dac3ab:536
+fetch @ @tanstack_react-query.js?v=e8dac3ab:926
+executeFetch_fn @ @tanstack_react-query.js?v=e8dac3ab:2211
+(anonymous) @ @tanstack_react-query.js?v=e8dac3ab:2245Understand this error
+UserContributionsTab.tsx:13  GET https://57ea5bc9-b3d8-414b-a900-b6ddfd4dc58d-00-10mussz32kas0.spock.replit.dev/api/contributions/user/guest_1763988629401 500 (Internal Server Error)
+queryFn @ UserContributionsTab.tsx:13
+fetchFn @ @tanstack_react-query.js?v=e8dac3ab:840
+run @ @tanstack_react-query.js?v=e8dac3ab:494
+start @ @tanstack_react-query.js?v=e8dac3ab:536
+fetch @ @tanstack_react-query.js?v=e8dac3ab:926
+executeFetch_fn @ @tanstack_react-query.js?v=e8dac3ab:2211
+(anonymous) @ @tanstack_react-query.js?v=e8dac3ab:2245
+setInterval
+updateRefetchInterval_fn @ @tanstack_react-query.js?v=e8dac3ab:2243
+updateTimers_fn @ @tanstack_react-query.js?v=e8dac3ab:2250
+onQueryUpdate @ @tanstack_react-query.js?v=e8dac3ab:2206
+(anonymous) @ @tanstack_react-query.js?v=e8dac3ab:998
+(anonymous) @ @tanstack_react-query.js?v=e8dac3ab:997
+batch @ @tanstack_react-query.js?v=e8dac3ab:583
+dispatch_fn @ @tanstack_react-query.js?v=e8dac3ab:996
+setData @ @tanstack_react-query.js?v=e8dac3ab:696
+onSuccess @ @tanstack_react-query.js?v=e8dac3ab:897
+resolve @ @tanstack_react-query.js?v=e8dac3ab:456
+Promise.then
+run @ @tanstack_react-query.js?v=e8dac3ab:498
+start @ @tanstack_react-query.js?v=e8dac3ab:536
+fetch @ @tanstack_react-query.js?v=e8dac3ab:926
+executeFetch_fn @ @tanstack_react-query.js?v=e8dac3ab:2211
+(anonymous) @ @tanstack_react-query.js?v=e8dac3ab:2245Understand this error
