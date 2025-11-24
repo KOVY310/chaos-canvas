@@ -629,111 +629,115 @@ export default function CanvasPage() {
           C
         </div>
 
-        {/* Live Activity Ticker */}
-        {activeTab === 'canvas' && <LiveActivityTicker />}
-
-        {/* Stories Banner */}
-        {activeTab === 'canvas' && <StoriesBannerSwipe />}
-
-        {/* Main Content - Vertical Infinite Feed */}
-        {activeTab === 'canvas' ? (
-          <div 
-            ref={feedScrollRef}
-            onScroll={handleScroll}
-            className="flex-1 w-full overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide bg-background">
-            {canvasContributions && canvasContributions.length > 0 ? (
-              canvasContributions.map((contribution, idx) => {
-                const contentData = contribution.contentData as any;
-                const imageUrl = contentData?.url || '';
-                const title = contentData?.prompt || 'Chaos';
-                return (
-                  <div key={contribution.id} className="snap-center h-screen w-full flex-shrink-0">
-                    <TikTokCard
-                      id={contribution.id}
-                      imageUrl={imageUrl}
-                      title={title}
-                      author={contribution.userId || 'unknown'}
-                      likes={contribution.boostCount || Math.floor(Math.random() * 10000)}
-                      onLike={() => {
-                        handleBoost(contribution.id);
-                        if ((idx + 1) % 3 === 0) setShareOpen(true);
-                      }}
-                      onReact={(type) => {
-                        if (type === 'fire') handleBoost(contribution.id);
-                      }}
-                    />
+        {/* CONTENT CONTAINER - ONLY ONE TAB SHOWS */}
+        <div className="flex-1 w-full overflow-hidden flex flex-col">
+          {/* Canvas Tab */}
+          {activeTab === 'canvas' && (
+            <>
+              <LiveActivityTicker />
+              <StoriesBannerSwipe />
+              <div 
+                ref={feedScrollRef}
+                onScroll={handleScroll}
+                className="flex-1 w-full overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide bg-background">
+                {canvasContributions && canvasContributions.length > 0 ? (
+                  canvasContributions.map((contribution, idx) => {
+                    const contentData = contribution.contentData as any;
+                    const imageUrl = contentData?.url || '';
+                    const title = contentData?.prompt || 'Chaos';
+                    return (
+                      <div key={contribution.id} className="snap-center h-screen w-full flex-shrink-0">
+                        <TikTokCard
+                          id={contribution.id}
+                          imageUrl={imageUrl}
+                          title={title}
+                          author={contribution.userId || 'unknown'}
+                          likes={contribution.boostCount || Math.floor(Math.random() * 10000)}
+                          onLike={() => {
+                            handleBoost(contribution.id);
+                            if ((idx + 1) % 3 === 0) setShareOpen(true);
+                          }}
+                          onReact={(type) => {
+                            if (type === 'fire') handleBoost(contribution.id);
+                          }}
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="h-screen w-full flex items-center justify-center bg-background">
+                    <p className="text-muted-foreground text-center px-4">
+                      {contributionsLoading ? 'Načítám obsah...' : 'Zatím žádný obsah. Klikni na + a přidej svůj chaos!'}
+                    </p>
                   </div>
-                );
-              })
-            ) : (
-              <div className="h-screen w-full flex items-center justify-center bg-background">
-                <p className="text-muted-foreground text-center px-4">
-                  {contributionsLoading ? 'Načítám obsah...' : 'Zatím žádný obsah. Klikni na + a přidej svůj chaos!'}
-                </p>
+                )}
               </div>
-            )}
-          </div>
-        ) : null}
+            </>
+          )}
 
-        {activeTab === 'league' && (
-          <div className="flex-1 overflow-y-auto pb-20">
-            <div className="p-4 space-y-6">
-              <DailySeedDisplay />
-              <ChaosTakeoverCountdown />
-              <NationalChaosLeaderboard />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'mine' && (
-          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
-            <h2 className="font-heading text-lg font-bold">{t('profile.myContributions')}</h2>
-            <UserContributionsTab />
-          </div>
-        )}
-
-        {activeTab === 'profile' && (
-          <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-6">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-2" />
-              <h2 className="font-heading text-lg font-bold">{t('profile.guestUser')}</h2>
-              <p className="text-sm text-muted-foreground">{currentUserId}</p>
-            </div>
-            <div className="border-t pt-4 space-y-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">{t('profile.chaosCoins')}</p>
-                <p className="font-heading font-bold text-lg">{chaosCoins}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">{t('profile.contributions')}</p>
-                <p className="font-heading font-bold text-lg">{contributionCount}</p>
+          {/* League Tab */}
+          {activeTab === 'league' && (
+            <div className="flex-1 overflow-y-auto pb-20">
+              <div className="p-4 space-y-6">
+                <DailySeedDisplay />
+                <ChaosTakeoverCountdown />
+                <NationalChaosLeaderboard />
               </div>
             </div>
+          )}
 
-            {/* ChaosPro Upgrade Section */}
-            <div className="border-t pt-4">
-              <div className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-2 border-yellow-400">
-                <h2 className="text-xl font-heading font-bold text-center mb-2 text-yellow-300">
-                  🔥 Staň se Chaos Legendou! 🔥
-                </h2>
-                <p className="text-sm text-center text-gray-200 mb-4">
-                  Unlock unlimited posts, exclusive features & cosmic power
-                </p>
-                <UpgradeButton />
+          {/* Mine Tab */}
+          {activeTab === 'mine' && (
+            <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-4">
+              <h2 className="font-heading text-lg font-bold">{t('profile.myContributions')}</h2>
+              <UserContributionsTab />
+            </div>
+          )}
+
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="flex-1 overflow-y-auto pb-20 p-4 space-y-6">
+              <div className="text-center">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mx-auto mb-2" />
+                <h2 className="font-heading text-lg font-bold">{t('profile.guestUser')}</h2>
+                <p className="text-sm text-muted-foreground">{currentUserId}</p>
+              </div>
+              <div className="border-t pt-4 space-y-4">
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">{t('profile.chaosCoins')}</p>
+                  <p className="font-heading font-bold text-lg">{chaosCoins}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">{t('profile.contributions')}</p>
+                  <p className="font-heading font-bold text-lg">{contributionCount}</p>
+                </div>
+              </div>
+
+              {/* ChaosPro Upgrade Section */}
+              <div className="border-t pt-4">
+                <div className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-2 border-yellow-400">
+                  <h2 className="text-xl font-heading font-bold text-center mb-2 text-yellow-300">
+                    🔥 Staň se Chaos Legendou! 🔥
+                  </h2>
+                  <p className="text-sm text-center text-gray-200 mb-4">
+                    Unlock unlimited posts, exclusive features & cosmic power
+                  </p>
+                  <UpgradeButton />
+                </div>
+              </div>
+
+              <div className="border-t pt-4 space-y-3">
+                <LanguageCurrencySelector />
+                <YourMomModeToggle />
+                <ThemeToggle />
+                <Button variant="destructive" className="w-full" data-testid="button-logout">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {t('profile.logout')}
+                </Button>
               </div>
             </div>
-
-            <div className="border-t pt-4 space-y-3">
-              <LanguageCurrencySelector />
-              <YourMomModeToggle />
-              <ThemeToggle />
-              <Button variant="destructive" className="w-full" data-testid="button-logout">
-                <LogOut className="w-4 h-4 mr-2" />
-                {t('profile.logout')}
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Creator Modal with spring animation */}
         <CreatorModal
