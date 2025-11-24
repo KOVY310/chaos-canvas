@@ -178,7 +178,7 @@ export default function CanvasPage() {
   };
 
   // Fetch contributions for current layer
-  const { data: contributions = [], isLoading: contributionsLoading } = useQuery({
+  const { data: canvasContributions = [], isLoading: contributionsLoading } = useQuery({
     queryKey: ['/api/contributions/layer', currentLayer.id],
     queryFn: () => api.getContributionsByLayer(currentLayer.id),
     enabled: !!currentLayer.id,
@@ -296,23 +296,8 @@ export default function CanvasPage() {
     },
   ]);
 
-  // Convert contributions to canvas format
-  const canvasContributions: CanvasContribution[] = contributions.map((c: any) => ({
-    id: c.id,
-    userId: c.userId,
-    contentType: c.contentType,
-    contentData: c.contentData,
-    positionX: parseFloat(c.positionX?.toString() || '0'),
-    positionY: parseFloat(c.positionY?.toString() || '0'),
-    width: c.width,
-    height: c.height,
-    boostCount: c.boostCount || 0,
-    viewCount: c.viewCount || 0,
-    marketPrice: c.marketPrice || '0',
-  }));
-
   // Convert contributions to feed format (latest first)
-  const contributionFeed = [...contributions]
+  const contributionFeed = [...canvasContributions]
     .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
     .slice(0, 20)
     .map((c: any) => ({
