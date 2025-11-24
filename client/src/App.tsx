@@ -62,9 +62,10 @@ function DevIndicator() {
 function Router() {
   return (
     <Switch>
-      <Route path="/today" component={TodayPage} />
-      <Route path="/" component={CanvasPage} />
+      <Route path="/canvas" component={CanvasPage} />
       <Route path="/profile" component={ProfilePage} />
+      <Route path="/today" component={TodayPage} />
+      <Route path="/" component={TodayPage} />
       <Route component={NotFound} />
     </Switch>
   );

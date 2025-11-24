@@ -700,5 +700,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ========== OG IMAGE GENERATION ==========
+  app.get("/api/og/today.png", async (req, res) => {
+    try {
+      const prompt = "Létající svíčková nad Prahou";
+      const width = 1080;
+      const height = 1920;
+      
+      // Generate SVG-based OG image (no external dependencies)
+      const svg = `
+        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#1a0033;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#330066;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#000033;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Background -->
+          <rect width="${width}" height="${height}" fill="url(#bgGrad)"/>
+          
+          <!-- Accent orbs -->
+          <circle cx="200" cy="300" r="200" fill="#FF006E" opacity="0.2"/>
+          <circle cx="900" cy="1600" r="250" fill="#00F5FF" opacity="0.15"/>
+          
+          <!-- Logo -->
+          <circle cx="${width/2}" cy="200" r="60" fill="url(#bgGrad)" stroke="#FF006E" stroke-width="3"/>
+          <text x="${width/2}" y="220" font-size="80" font-weight="bold" fill="#FF006E" text-anchor="middle" font-family="Arial, sans-serif">C</text>
+          
+          <!-- Main text -->
+          <text x="${width/2}" y="500" font-size="72" font-weight="bold" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif" dominant-baseline="middle">
+            ${prompt}
+          </text>
+          
+          <!-- Subtext -->
+          <text x="${width/2}" y="700" font-size="42" fill="#00F5FF" text-anchor="middle" font-family="Arial, sans-serif">
+            Přidej svou verzi
+          </text>
+          
+          <!-- Stats -->
+          <text x="${width/2}" y="1000" font-size="48" font-weight="bold" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif">
+            4.2M tvůrců
+          </text>
+          <text x="${width/2}" y="1100" font-size="36" fill="#00D9FF" text-anchor="middle" font-family="Arial, sans-serif">
+            Tvoří TEĎKA 🔥
+          </text>
+          
+          <!-- CTA -->
+          <rect x="150" y="1400" width="${width - 300}" height="200" rx="40" fill="#FF006E" opacity="0.8"/>
+          <text x="${width/2}" y="1520" font-size="56" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">
+            PŘIDEJ SVŮJ CHAOS
+          </text>
+          
+          <!-- Branding -->
+          <text x="${width/2}" y="1850" font-size="28" fill="#999" text-anchor="middle" font-family="Arial, sans-serif">
+            chaos.canvas
+          </text>
+        </svg>
+      `;
+      
+      res.type('svg').send(svg);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }

@@ -32,6 +32,7 @@ import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
 import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { CelebrationOverlay } from '@/components/CelebrationOverlay';
+import { AutoShareModal } from '@/components/mobile/AutoShareModal';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,8 @@ export default function CanvasPage() {
   const [pullDistance, setPullDistance] = useState(0);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [celebrationText, setCelebrationText] = useState('');
+  const [lastContributionTitle, setLastContributionTitle] = useState('');
+  const [autoShareOpen, setAutoShareOpen] = useState(false);
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -120,6 +123,53 @@ export default function CanvasPage() {
     setPullDistance(0);
   };
 
+  // Seed canvas with starter posts on first load if empty
+  useEffect(() => {
+    const seedCanvas = async () => {
+      try {
+        // Check if contributions are empty
+        const existingContributions = await api.getContributionsByLayer(currentLayer.id);
+        if (existingContributions.length === 0) {
+          // Seed with 10-15 starter posts
+          const starterPosts = [
+            { text: 'Nejvtipnější letový kanál 🚁', author: 'ChaosBot' },
+            { text: 'Svíčková ale LÉTÁ 😂', author: 'MemeKing' },
+            { text: 'CESKO_IRL.jpg', author: 'FactChecker' },
+            { text: 'Tenhle obrázek čtyřikrát narušil fyziku', author: 'PhysicsTeacher' },
+            { text: 'Jídlo se ozvučilo', author: 'FoodCritic' },
+            { text: 'Pražané to znají 🇨🇿', author: 'LocalGuide' },
+            { text: 'Jak to fungovalo??? 🤯', author: 'Confused' },
+            { text: 'Masterpiece', author: 'ArtLover' },
+            { text: 'To už viděli všichni v Brně', author: 'BrnoBoy' },
+            { text: 'Věrné reprodukci české kultury 10/10', author: 'Critic' },
+            { text: 'Když babička vaří a ty fotíš', author: 'Photographer' },
+            { text: 'ZÁPAS STOLETÍ KDY?', author: 'SportsFan' },
+            { text: 'Vidím to v každém snu teď', author: 'Dreamer' },
+            { text: 'Toto je umění', author: 'Philosopher' },
+            { text: 'Okamžitě sdílím s mámou', author: 'Grandma' },
+          ];
+          
+          for (let i = 0; i < Math.min(12, starterPosts.length); i++) {
+            try {
+              await api.createContribution({
+                userId: 'seed_bot',
+                layerId: currentLayer.id,
+                contentType: 'text',
+                contentData: starterPosts[i],
+                positionX: Math.random() * 800,
+                positionY: Math.random() * 600,
+                width: 200,
+                height: 100,
+              });
+            } catch (e) {}
+          }
+          queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
+        }
+      } catch (e) {}
+    };
+    seedCanvas();
+  }, []);
+
   // Fetch contributions for current layer
   const { data: contributions = [], isLoading: contributionsLoading } = useQuery({
     queryKey: ['/api/contributions/layer', currentLayer.id],
@@ -151,6 +201,20 @@ export default function CanvasPage() {
     mutationFn: (data: any) => api.createContribution(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
+      sounds.contribution();
+      setIsCelebrating(true);
+      setCelebrationText('LEGENDARNÍ MOVE!');
+      setShowConfetti(true);
+      if ('vibrate' in navigator) navigator.vibrate([20, 10, 20, 10, 50]);
+      
+      // Trigger auto-share modal
+      setTimeout(() => {
+        setLastContributionTitle('Tvůj chaos');
+        setAutoShareOpen(true);
+        setIsCelebrating(false);
+        setShowConfetti(false);
+      }, 1500);
+      
       toast({ title: 'Contribution added!', description: 'Your creation is now on the canvas' });
     },
     onError: () => {
@@ -409,6 +473,13 @@ export default function CanvasPage() {
       {/* MOBILE LAYOUT - STEVE JOBS PERFECTION */}
       <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background relative">
         <ShareChaosModal open={shareOpen} onOpenChange={setShareOpen} />
+        
+        {/* Auto-Share Modal - triggers after contribution */}
+        <AutoShareModal 
+          open={autoShareOpen} 
+          onClose={() => setAutoShareOpen(false)}
+          contentTitle={lastContributionTitle}
+        />
 
         {/* Logo - Top left 44px */}
         <div className="absolute top-3 left-4 z-30 w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-heading font-bold text-white text-lg">
