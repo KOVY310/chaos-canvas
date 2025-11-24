@@ -15,7 +15,7 @@ export function MobileBottomNav({ activeTab, onTabChange, onCreateClick }: Mobil
     { id: 'canvas', label: 'nav.canvas', icon: LayoutGrid },
     { id: 'league', label: 'nav.league', icon: Flame },
     { id: 'mine', label: 'nav.mine', icon: User },
-    { id: 'profile', label: 'nav.settings', icon: Home },
+    { id: 'settings', label: 'nav.settings', icon: Home },
   ];
 
   return (

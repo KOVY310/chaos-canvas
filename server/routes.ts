@@ -135,6 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.createUser({
         isAnonymous: true,
         locale: locale || 'en-US',
+        currency: 'USD',
         countryCode: countryCode || 'US',
         username: `guest_${Date.now()}`,
         password: '',

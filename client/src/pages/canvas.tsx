@@ -666,8 +666,8 @@ export default function CanvasPage() {
         <CreatorModal
           open={creatorOpen}
           onOpenChange={setCreatorOpen}
-          onSubmit={handleAddContribution}
-          isLoading={createContributionMutation.isPending}
+          onSubmit={handleGenerateContent}
+          isLoading={generateAIMutation.isPending}
         />
 
         {/* AI Co-Pilot Bubble */}
@@ -680,7 +680,7 @@ export default function CanvasPage() {
         <MobileBottomNav 
           activeTab={activeTab} 
           onTabChange={(tab) => {
-            if (tab === 'profile') {
+            if (tab === 'settings') {
               setLocation('/profile');
             } else if (tab === 'league') {
               setLocation('/league');

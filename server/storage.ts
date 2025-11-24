@@ -30,7 +30,9 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(userId: string, updates: Partial<User>): Promise<User | undefined>;
   updateUserCoins(userId: string, amount: number): Promise<User | undefined>;
+  updateUserContributionCount(userId: string, count: number): Promise<User | undefined>;
   updateUserStripeCustomer(userId: string, customerId: string): Promise<User | undefined>;
   updateUserProStatus(userId: string, isPro: boolean): Promise<User | undefined>;
   
@@ -87,10 +89,28 @@ export class PostgresStorage implements IStorage {
     return user;
   }
 
+  async updateUser(userId: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await this.db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
   async updateUserCoins(userId: string, amount: number): Promise<User | undefined> {
     const [user] = await this.db
       .update(users)
       .set({ chaosCoins: amount })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserContributionCount(userId: string, count: number): Promise<User | undefined> {
+    const [user] = await this.db
+      .update(users)
+      .set({ dailyContributionCount: count })
       .where(eq(users.id, userId))
       .returning();
     return user;
@@ -109,7 +129,6 @@ export class PostgresStorage implements IStorage {
     const [user] = await this.db
       .update(users)
       .set({ 
-        isPro,
         proUntil: isPro ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null
       })
       .where(eq(users.id, userId))
