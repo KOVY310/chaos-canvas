@@ -84,8 +84,7 @@ export default function CanvasPage() {
     const initializeAnonymousUser = async () => {
       if (!currentUserId) {
         try {
-          const guestId = `guest_${Date.now()}`;
-          // Create user in database
+          // Create user in database via API
           const response = await fetch('/api/auth/anonymous', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -94,16 +93,24 @@ export default function CanvasPage() {
               countryCode: 'CZ',
             }),
           });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to create anonymous user: ${response.status}`);
+          }
+          
           const user = await response.json();
-          localStorage.setItem('chaos-guest-id', user.id || guestId);
-          setCurrentUserId(user.id || guestId);
+          
+          if (!user || !user.id) {
+            throw new Error('Invalid user response');
+          }
+          
+          localStorage.setItem('chaos-guest-id', user.id);
+          setCurrentUserId(user.id);
           setChaosCoins(user.chaosCoins || 100);
         } catch (error) {
-          console.error('Failed to create anonymous user:', error);
-          const guestId = `guest_${Date.now()}`;
-          localStorage.setItem('chaos-guest-id', guestId);
-          setCurrentUserId(guestId);
-          setChaosCoins(100);
+          console.error('[INIT ERROR]', error);
+          // Don't fallback to timestamp - just set loading state
+          // User MUST be created in database for contributions to work
         }
       }
     };
@@ -257,9 +264,17 @@ export default function CanvasPage() {
   });
 
   const generateAIMutation = useMutation({
-    mutationFn: ({ prompt, style }: { prompt: string; style: string }) =>
-      api.generateAIContent(prompt, style, currentUserId!),
+    mutationFn: ({ prompt, style }: { prompt: string; style: string }) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        return Promise.reject(new Error('User not initialized'));
+      }
+      return api.generateAIContent(prompt, style, currentUserId);
+    },
     onSuccess: async (data, variables) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        toast({ title: 'Error', description: 'User session expired', variant: 'destructive' });
+        return;
+      }
       // Create contribution with AI-generated content
       await createContributionMutation.mutateAsync({
         userId: currentUserId,
@@ -275,6 +290,10 @@ export default function CanvasPage() {
         width: 300,
         height: 200,
       });
+    },
+    onError: (error) => {
+      console.error('[AI ERROR]', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
     },
   });
 
@@ -357,8 +376,12 @@ export default function CanvasPage() {
   };
 
   const handleGenerateContent = async (prompt: string, style: string = 'meme') => {
-    if (!currentUserId) {
-      toast({ title: 'Please login', description: 'Sign in to generate content', variant: 'destructive' });
+    if (!currentUserId || currentUserId.startsWith('guest_')) {
+      toast({ 
+        title: 'Initializing...', 
+        description: 'Setting up your account. Try again in a moment.',
+        variant: 'default'
+      });
       return;
     }
     
