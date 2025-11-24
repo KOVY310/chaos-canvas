@@ -3,6 +3,8 @@ import { Share2, LogOut, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { LoginModal } from '@/components/mobile/LoginModal';
 import type { Contribution } from '@shared/schema';
 
 interface UserProfile {
@@ -14,21 +16,25 @@ interface UserProfile {
   countryRank: number;
   country: string;
   followers: number;
+  isAuthenticated: boolean;
 }
 
 export default function ProfilePage() {
   const { t, currentUserId, chaosCoins } = useApp();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const isGuest = currentUserId?.startsWith('guest_');
 
   // Mock data for demo
   const profile: UserProfile = {
-    id: currentUserId,
-    username: currentUserId === 'anonymous' ? 'guest_69' : '@kamo420',
+    id: currentUserId || '',
+    username: isGuest ? 'guest_69' : '@kamo420',
     chaosCoins,
     contributions: [],
     globalRank: 69,
     countryRank: 420,
     country: 'CZ',
     followers: 4206900,
+    isAuthenticated: !isGuest,
   };
 
   const contributionCount = profile.contributions.length;
@@ -158,24 +164,28 @@ export default function ProfilePage() {
         </motion.div>
       )}
 
-      {/* UPGRADE BUTTON - Massive CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="px-4 mb-8"
-      >
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-heading font-bold py-4 rounded-3xl shadow-lg neon-glow transition-all"
+      {/* UPGRADE BUTTON - Massive CTA (only for guests) */}
+      {isGuest && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="px-4 mb-8"
         >
-          🚀 Povýšit na Chaos Legendu
-        </motion.button>
-        <p className="text-xs text-center text-gray-400 mt-2">
-          Přihlaste se s Google/Apple/TikTok aby jste měli cool jméno
-        </p>
-      </motion.div>
+          <motion.button
+            onClick={() => setLoginOpen(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-heading font-bold py-4 rounded-3xl shadow-lg neon-glow transition-all"
+            data-testid="button-upgrade-legend"
+          >
+            🚀 Povýšit na Chaos Legendu
+          </motion.button>
+          <p className="text-xs text-center text-gray-400 mt-2">
+            Přihlaste se s Google/Apple/TikTok aby jste měli cool jméno
+          </p>
+        </motion.div>
+      )}
 
       {/* CHAOS GALLERY - 3-column grid */}
       <motion.div
@@ -224,6 +234,16 @@ export default function ProfilePage() {
           Podívej se na můj chaos šílenství
         </Button>
       </motion.div>
+
+      {/* Login Modal */}
+      <LoginModal 
+        open={loginOpen} 
+        onOpenChange={setLoginOpen}
+        onLogin={(provider) => {
+          console.log(`Logging in with ${provider}`);
+          // In production: would handle auth flow here
+        }}
+      />
     </div>
   );
 }
