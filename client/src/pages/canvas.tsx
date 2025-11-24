@@ -747,6 +747,7 @@ export default function CanvasPage() {
         <MobileBottomNav 
           activeTab={activeTab} 
           onTabChange={(tab) => {
+            setShowGaryVeeOverlay(false);
             setActiveTab(tab);
           }}
           onCreateClick={() => {
