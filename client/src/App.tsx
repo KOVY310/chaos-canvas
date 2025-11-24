@@ -8,6 +8,7 @@ import { ChaosLogo } from "@/components/ChaosLogo";
 import CanvasPage from "@/pages/canvas";
 import ProfilePage from "@/pages/profile";
 import TodayPage from "@/pages/today";
+import LeaguePage from "@/pages/league";
 import NotFound from "@/pages/not-found";
 
 // Logo Header with Glitch
@@ -64,6 +65,7 @@ function Router() {
     <Switch>
       <Route path="/canvas" component={CanvasPage} />
       <Route path="/profile" component={ProfilePage} />
+      <Route path="/league" component={LeaguePage} />
       <Route path="/today" component={TodayPage} />
       <Route path="/" component={TodayPage} />
       <Route component={NotFound} />
