@@ -335,36 +335,31 @@ export default function LeaguePage() {
             </p>
           </div>
 
-          {/* Big CTA button */}
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+          {/* Share button - desktop only */}
+          <div className="hidden md:flex justify-center">
             <Button
               onClick={() => {
-                localStorage.setItem('openCreatorModal', 'true');
-                setLocation('/canvas');
-              }}
-              className="w-full md:w-auto px-12 h-20 text-2xl md:text-3xl font-heading font-black bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-3xl shadow-2xl neon-glow transition-all"
-              data-testid="button-push-czech-to-1"
-            >
-              ⚡ PŘIDEJ CHAOS A POSUŇ ČESKO NA #1!
-            </Button>
-
-            <Button
-              onClick={() => {
-                const text = `Česko #${czRank?.rank || 2}! Pojď nám pomoct dobýt #1 🇨🇿 ${leaderboard.map((c) => c.flag).join('')}`;
+                const text = `🔥 Česko #${czRank?.rank || 2}! Pojď nám pomoct dobýt #1! 🇨🇿\n\n${leaderboard.map((c) => `#${c.rank} ${c.flag} ${c.country}`).join('\n')}`;
+                const url = `${window.location.origin}/league`;
+                
                 if (navigator.share) {
                   navigator.share({
-                    title: 'National Chaos League',
+                    title: 'National Chaos League 🔥',
                     text,
-                    url: window.location.href,
+                    url,
                   }).catch(() => {});
+                } else {
+                  // Fallback for desktop
+                  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                  window.open(shareUrl);
                 }
               }}
               variant="outline"
-              className="w-full md:w-auto border-cyan-400/50 text-cyan-300 hover:bg-cyan-500/10 px-8 h-20 text-lg md:text-xl font-heading font-bold"
+              className="border-cyan-400/50 text-cyan-300 hover:bg-cyan-500/10 px-8 h-16 text-lg font-heading font-bold"
               data-testid="button-share-league"
             >
               <Share2 className="w-5 h-5 mr-2" />
-              Sdílet ranking
+              🚀 Sdílet ranking & pozvat kamarády
             </Button>
           </div>
         </motion.div>

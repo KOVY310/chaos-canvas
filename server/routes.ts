@@ -766,5 +766,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ========== LEAGUE OG IMAGE ==========
+  app.get("/api/og/league.png", async (req, res) => {
+    try {
+      const width = 1080;
+      const height = 1920;
+      
+      // Generate epic league OG image
+      const svg = `
+        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leagueBg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#9D00FF;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#FF006E;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#1a0033;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Background -->
+          <rect width="${width}" height="${height}" fill="url(#leagueBg)"/>
+          
+          <!-- Accent elements -->
+          <circle cx="200" cy="400" r="250" fill="#FFD700" opacity="0.1"/>
+          <circle cx="900" cy="1500" r="300" fill="#00F5FF" opacity="0.08"/>
+          
+          <!-- Main title -->
+          <text x="${width/2}" y="150" font-size="96" font-weight="900" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif">NATIONAL</text>
+          <text x="${width/2}" y="280" font-size="96" font-weight="900" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif">CHAOS LEAGUE</text>
+          
+          <!-- Crown and flame -->
+          <text x="${width/2 - 150}" y="350" font-size="80">👑</text>
+          <text x="${width/2 + 150}" y="350" font-size="80">🔥</text>
+          
+          <!-- Top 3 positions -->
+          <text x="${width/2}" y="550" font-size="48" font-weight="bold" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif">#1 🇵🇭 Filipíny</text>
+          <text x="${width/2}" y="650" font-size="48" font-weight="bold" fill="#00D9FF" text-anchor="middle" font-family="Arial, sans-serif">#2 🇨🇿 ČESKO</text>
+          <text x="${width/2}" y="750" font-size="48" font-weight="bold" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif">#3 🇧🇷 Brazílie</text>
+          
+          <!-- Call to action -->
+          <rect x="80" y="1000" width="${width - 160}" height="250" rx="30" fill="#FF006E" opacity="0.9"/>
+          <text x="${width/2}" y="1080" font-size="52" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">ČESKO POTŘEBUJE TEBE!</text>
+          <text x="${width/2}" y="1160" font-size="44" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif">Jen 69 420 příspěvků do #1</text>
+          
+          <!-- Stats -->
+          <text x="${width/2}" y="1450" font-size="36" fill="#00D9FF" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif">892K příspěvků</text>
+          <text x="${width/2}" y="1520" font-size="36" fill="#FFD700" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif">4.2M tvůrců • 50M DAU</text>
+          
+          <!-- Branding -->
+          <text x="${width/2}" y="1850" font-size="32" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold">chaos.canvas</text>
+          <text x="${width/2}" y="1900" font-size="24" fill="#999" text-anchor="middle" font-family="Arial, sans-serif">Přidej chaos. Vítězí tvá země.</text>
+        </svg>
+      `;
+      
+      res.type('svg').send(svg);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }
