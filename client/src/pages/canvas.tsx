@@ -6,7 +6,6 @@ import { queryClient } from '@/lib/queryClient';
 import * as api from '@/lib/api';
 import { sounds } from '@/lib/sounds';
 import { InfiniteCanvas, type CanvasContribution } from '@/components/InfiniteCanvas';
-import { AICopilotPanel } from '@/components/AICopilotPanel';
 import { LayerSwitcher } from '@/components/LayerSwitcher';
 import { ChaosCoinsDisplay } from '@/components/ChaosCoinsDisplay';
 import { ContributionFeed } from '@/components/ContributionFeed';
@@ -28,7 +27,6 @@ import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import { StoriesBannerSwipe } from '@/components/mobile/StoriesBannerSwipe';
 import { TikTokCard } from '@/components/mobile/TikTokCard';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
-import { MobileAICopilotBubble } from '@/components/mobile/MobileAICopilotBubble';
 import { ShareChaosModal } from '@/components/mobile/ShareChaosModal';
 import { CelebrationOverlay } from '@/components/CelebrationOverlay';
 import { AutoShareModal } from '@/components/mobile/AutoShareModal';
@@ -575,13 +573,6 @@ export default function CanvasPage() {
 
       {/* DESKTOP LAYOUT */}
       <div className="hidden md:flex h-screen w-full overflow-hidden">
-        {/* AI Co-Pilot Panel (Left) */}
-        <AICopilotPanel
-          isCollapsed={isCopilotCollapsed}
-          onToggleCollapse={() => setIsCopilotCollapsed(!isCopilotCollapsed)}
-          onGenerateContent={handleGenerateContent}
-        />
-
         {/* Main Canvas Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Bar */}
@@ -799,12 +790,6 @@ export default function CanvasPage() {
           open={creatorOpen}
           onOpenChange={setCreatorOpen}
           onSubmit={handleGenerateContent}
-          isLoading={generateAIMutation.isPending}
-        />
-
-        {/* AI Co-Pilot Bubble */}
-        <MobileAICopilotBubble
-          onGenerate={handleGenerateContent}
           isLoading={generateAIMutation.isPending}
         />
 

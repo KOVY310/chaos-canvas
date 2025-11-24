@@ -4,7 +4,7 @@ import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { TrendingUp, TrendingDown, DollarSign, Wallet } from 'lucide-react';
 import { formatPrice } from '@/lib/i18n';
 
@@ -106,6 +106,7 @@ export function MemeEconomyDashboard({ stocks, userPortfolio, onInvest, onSell, 
             <TrendingUp className="w-5 h-5 text-primary" />
             {t('memeEconomy.title')}
           </DialogTitle>
+          <DialogDescription>Investuj do trendujících příspěvků a sleduj jejich cenu v reálném čase</DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
