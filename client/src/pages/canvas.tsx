@@ -759,13 +759,7 @@ export default function CanvasPage() {
         <MobileBottomNav 
           activeTab={activeTab} 
           onTabChange={(tab) => {
-            if (tab === 'settings') {
-              setLocation('/profile');
-            } else if (tab === 'league') {
-              setLocation('/league');
-            } else {
-              setActiveTab(tab);
-            }
+            setActiveTab(tab);
           }}
           onCreateClick={() => {
             setCreatorOpen(true);
