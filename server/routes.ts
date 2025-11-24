@@ -4,6 +4,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
 import * as cron from "node-cron";
+import Stripe from "stripe";
 import { 
   insertUserSchema, 
   insertCanvasLayerSchema, 
@@ -465,7 +466,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ========== CHAOS COINS / PAYMENT ROUTES (Prepared for Stripe) ==========
+  // ========== STRIPE PAYMENT ROUTES ==========
+  
+  const stripe = process.env.STRIPE_SECRET_KEY 
+    ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-11-20" })
+    : null;
+
+  // Create Stripe checkout session for ChaosPro subscription
+  app.post("/api/stripe/checkout-session", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(500).json({ error: "Stripe not configured" });
+      }
+
+      const { userId, priceId } = req.body;
+      if (!userId || !priceId) {
+        return res.status(400).json({ error: "Missing userId or priceId" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Create or get Stripe customer
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email || `user-${userId}@chaoscanvas.local`,
+          metadata: { userId },
+        });
+        customerId = customer.id;
+      }
+
+      // Create checkout session
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        mode: "subscription",
+        payment_method_types: ["card"],
+        line_items: [{ price: priceId, quantity: 1 }],
+        success_url: `https://chaoscanvas.example.com/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `https://chaoscanvas.example.com/cancel`,
+        metadata: { userId },
+      });
+
+      res.json({ sessionId: session.id, sessionUrl: session.url });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Stripe webhook handler
+  app.post("/api/stripe/webhook", async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(500).json({ error: "Stripe not configured" });
+      }
+
+      const sig = req.headers["stripe-signature"];
+      if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
+        return res.status(400).json({ error: "Missing signature or webhook secret" });
+      }
+
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          req.body,
+          sig as string,
+          process.env.STRIPE_WEBHOOK_SECRET
+        );
+      } catch (error: any) {
+        return res.status(400).json({ error: `Webhook signature failed: ${error.message}` });
+      }
+
+      // Handle subscription events
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object as any;
+        const userId = session.metadata?.userId;
+        if (userId) {
+          const user = await storage.getUser(userId);
+          if (user && session.customer) {
+            // Update user with Stripe customer ID and pro status
+            // Note: This is a simplified example - you may need to add this to your storage layer
+            console.log(`✅ User ${userId} subscribed with Stripe customer ${session.customer}`);
+          }
+        }
+      }
+
+      if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.created") {
+        const subscription = event.data.object as any;
+        console.log(`✅ Subscription ${subscription.id} updated for customer ${subscription.customer}`);
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ========== CHAOS COINS / PAYMENT ROUTES ==========
   
   app.post("/api/coins/purchase", async (req, res) => {
     try {
@@ -474,16 +573,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId || !amount) {
         return res.status(400).json({ error: "Missing userId or amount" });
       }
-
-      // TODO: When STRIPE_SECRET_KEY is available, create actual payment intent
-      /*
-      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2023-10-16" });
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: req.body.currency || "eur",
-      });
-      res.json({ clientSecret: paymentIntent.client_secret });
-      */
 
       // MOCK: Directly add coins for now
       const user = await storage.getUser(userId);
