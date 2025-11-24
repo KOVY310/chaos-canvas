@@ -207,7 +207,6 @@ export default function CanvasPage() {
       
       // Trigger auto-share modal
       setTimeout(() => {
-        setLastContributionTitle('Tvůj chaos');
         setAutoShareOpen(true);
         setIsCelebrating(false);
         setShowConfetti(false);
@@ -245,6 +244,8 @@ export default function CanvasPage() {
         toast({ title: 'Error', description: 'User session expired', variant: 'destructive' });
         return;
       }
+      // Store prompt for sharing
+      setLastContributionTitle(variables.prompt);
       // Create contribution with AI-generated content
       await createContributionMutation.mutateAsync({
         userId: currentUserId,
