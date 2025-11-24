@@ -19,7 +19,7 @@ export function MobileBottomNav({ activeTab, onTabChange, onCreateClick }: Mobil
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 blur-nav z-50 safe-area-inset-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 blur-nav z-[9999] safe-area-inset-bottom pointer-events-auto">
       <div className="flex items-center justify-around h-20 px-2">
         {navItems.map((item, idx) => {
           const Icon = item.icon;
