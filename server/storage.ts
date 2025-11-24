@@ -31,6 +31,8 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserCoins(userId: string, amount: number): Promise<User | undefined>;
+  updateUserStripeCustomer(userId: string, customerId: string): Promise<User | undefined>;
+  updateUserProStatus(userId: string, isPro: boolean): Promise<User | undefined>;
   
   // Canvas Layers
   getCanvasLayer(id: string): Promise<CanvasLayer | undefined>;
@@ -89,6 +91,27 @@ export class PostgresStorage implements IStorage {
     const [user] = await this.db
       .update(users)
       .set({ chaosCoins: amount })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeCustomer(userId: string, customerId: string): Promise<User | undefined> {
+    const [user] = await this.db
+      .update(users)
+      .set({ stripeCustomerId: customerId })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserProStatus(userId: string, isPro: boolean): Promise<User | undefined> {
+    const [user] = await this.db
+      .update(users)
+      .set({ 
+        isPro,
+        proUntil: isPro ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null
+      })
       .where(eq(users.id, userId))
       .returning();
     return user;

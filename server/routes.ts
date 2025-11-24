@@ -469,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ========== STRIPE PAYMENT ROUTES ==========
   
   const stripe = process.env.STRIPE_SECRET_KEY 
-    ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-11-20" })
+    ? new Stripe(process.env.STRIPE_SECRET_KEY)
     : null;
 
   // Create Stripe checkout session for ChaosPro subscription
@@ -497,6 +497,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           metadata: { userId },
         });
         customerId = customer.id;
+        // Store Stripe customer ID for future reference
+        await storage.updateUserStripeCustomer(userId, customerId);
       }
 
       // Create checkout session
@@ -505,8 +507,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mode: "subscription",
         payment_method_types: ["card"],
         line_items: [{ price: priceId, quantity: 1 }],
-        success_url: `https://chaoscanvas.example.com/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `https://chaoscanvas.example.com/cancel`,
+        success_url: `${req.headers.origin || 'https://chaoscanvas.example.com'}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin || 'https://chaoscanvas.example.com'}/cancel`,
         metadata: { userId },
       });
 
@@ -531,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let event;
       try {
         event = stripe.webhooks.constructEvent(
-          req.body,
+          req.rawBody as Buffer,
           sig as string,
           process.env.STRIPE_WEBHOOK_SECRET
         );
@@ -546,8 +548,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (userId) {
           const user = await storage.getUser(userId);
           if (user && session.customer) {
-            // Update user with Stripe customer ID and pro status
-            // Note: This is a simplified example - you may need to add this to your storage layer
+            // Update user Pro status
+            await storage.updateUserProStatus(userId, true);
             console.log(`✅ User ${userId} subscribed with Stripe customer ${session.customer}`);
           }
         }
