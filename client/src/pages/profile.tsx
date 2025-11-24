@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { LoginModal } from '@/components/mobile/LoginModal';
+import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import type { Contribution } from '@shared/schema';
 
 interface UserProfile {
@@ -20,6 +22,7 @@ interface UserProfile {
 }
 
 export default function ProfilePage() {
+  const [, setLocation] = useLocation();
   const { t, currentUserId, chaosCoins } = useApp();
   const [loginOpen, setLoginOpen] = useState(false);
   const isGuest = currentUserId?.startsWith('guest_');
@@ -242,6 +245,23 @@ export default function ProfilePage() {
         onLogin={(provider) => {
           console.log(`Logging in with ${provider}`);
           // In production: would handle auth flow here
+        }}
+      />
+
+      {/* Bottom Navigation */}
+      <MobileBottomNav 
+        activeTab="profile" 
+        onTabChange={(tab) => {
+          if (tab === 'profile') {
+            // Already on profile
+          } else if (tab === 'mine') {
+            setLocation('/');
+          } else {
+            setLocation('/');
+          }
+        }}
+        onCreateClick={() => {
+          setLocation('/');
         }}
       />
     </div>
