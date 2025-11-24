@@ -99,16 +99,7 @@ export function CreatorModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:hidden w-full h-screen max-w-full rounded-none p-4 flex flex-col gap-3">
         <DialogHeader className="mb-4">
-          <div className="flex items-center justify-between">
-            <DialogTitle>Tvůj Chaos</DialogTitle>
-            <button
-              onClick={() => onOpenChange(false)}
-              className="p-1 hover:bg-accent rounded-lg"
-              data-testid="button-close-creator"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+          <DialogTitle>Tvůj Chaos</DialogTitle>
         </DialogHeader>
 
         {/* Style Toggles */}
