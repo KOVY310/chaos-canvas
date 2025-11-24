@@ -84,6 +84,15 @@ export default function CanvasPage() {
     }
   }, [currentUserId, setCurrentUserId, setChaosCoins]);
 
+  // Auto-open creator modal if coming from /today
+  useEffect(() => {
+    const shouldOpenCreator = localStorage.getItem('openCreatorModal');
+    if (shouldOpenCreator === 'true') {
+      setCreatorOpen(true);
+      localStorage.removeItem('openCreatorModal');
+    }
+  }, []);
+
   // Micro-confetti every 15 seconds (ADHD engagement)
   useEffect(() => {
     const interval = setInterval(() => {

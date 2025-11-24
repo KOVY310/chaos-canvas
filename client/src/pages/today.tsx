@@ -96,7 +96,8 @@ export default function TodayPage() {
               // Pass prompt to creator and navigate
               localStorage.setItem('creatorPrompt', DAILY_PROMPT);
               localStorage.setItem('creatorStyle', DAILY_STYLE);
-              setLocation('/');
+              localStorage.setItem('openCreatorModal', 'true');
+              setLocation('/canvas');
             }}
             className="w-full md:w-96 h-20 text-2xl font-heading font-black bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-3xl shadow-2xl neon-glow transition-all"
             data-testid="button-add-chaos-daily"
