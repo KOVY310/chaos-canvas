@@ -160,10 +160,10 @@ export function CreatorModal({
           </div>
         </div>
 
-        {/* AI Suggestions Grid (2x3 Bento) */}
-        <div className="mb-4">
-          <label className="text-sm font-medium block mb-2">AI Návrhy</label>
-          <div className="grid grid-cols-2 gap-2">
+        {/* AI Suggestions Grid (Scrollable) */}
+        <div className="flex-1 overflow-y-auto min-h-0 mb-4">
+          <label className="text-sm font-medium block mb-2 sticky top-0 bg-background">AI Návrhy</label>
+          <div className="grid grid-cols-2 gap-2 pr-2">
             {suggestions.map((suggestion, i) => (
               <motion.button
                 key={i}
@@ -183,8 +183,8 @@ export function CreatorModal({
           </div>
         </div>
 
-        {/* Submit Button */}
-        <motion.div whileTap={{ scale: 0.95 }}>
+        {/* Submit Button - Always Visible at Bottom */}
+        <motion.div whileTap={{ scale: 0.95 }} className="shrink-0">
           <Button
             onClick={handleSubmit}
             disabled={!prompt.trim() || isLoading}
