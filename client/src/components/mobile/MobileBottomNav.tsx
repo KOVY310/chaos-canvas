@@ -26,24 +26,27 @@ export function MobileBottomNav({ activeTab, onTabChange, onCreateClick }: Mobil
           const isActive = activeTab === item.id;
 
           return (
-            <motion.button
+            <button
               key={item.id}
-              onClick={() => onTabChange(item.id)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex flex-col items-center gap-1.5 flex-1 py-2 relative"
+              onClick={() => {
+                console.log(`[NAV] Clicked ${item.id}`);
+                onTabChange(item.id);
+              }}
+              className="flex flex-col items-center gap-1.5 flex-1 py-2 relative hover:opacity-80 active:opacity-60 transition-opacity"
               data-testid={`nav-${item.id}`}
+              type="button"
             >
-              <motion.div
-                animate={isActive ? { scale: 1.15 } : { scale: 1 }}
-                className={`transition-all ${
+              <div
+                className={`transition-all transform ${
+                  isActive ? 'scale-115' : 'scale-100'
+                } ${
                   isActive
                     ? 'neon-glow text-primary'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Icon className="w-7 h-7" strokeWidth={isActive ? 2.5 : 2} />
-              </motion.div>
+              </div>
               <span
                 className={`text-xs font-medium transition-all ${
                   isActive
@@ -56,13 +59,11 @@ export function MobileBottomNav({ activeTab, onTabChange, onCreateClick }: Mobil
 
               {/* Active indicator - bar above */}
               {isActive && (
-                <motion.div
-                  layoutId="nav-indicator"
-                  className="absolute -top-1 w-6 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                  transition={{ duration: 0.3 }}
+                <div
+                  className="absolute -top-1 w-6 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-300"
                 />
               )}
-            </motion.button>
+            </button>
           );
         })}
 
