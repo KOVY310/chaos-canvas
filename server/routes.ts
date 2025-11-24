@@ -434,7 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Use FREE Hugging Face Inference API - FLUX.1-schnell (ultra-fast, no limits!)
       let hfResponse = await fetch(
-        "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+        "https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
         {
           method: "POST",
           headers: {
@@ -448,7 +448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!hfResponse.ok) {
         console.log(`[AI] FLUX.1-schnell failed (${hfResponse.status}), trying fallback...`);
         hfResponse = await fetch(
-          "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+          "https://router.huggingface.co/models/runwayml/stable-diffusion-v1-5",
           {
             method: "POST",
             headers: {

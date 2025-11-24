@@ -26,7 +26,7 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
       const links: Record<string, string> = {
         tiktok: `https://www.tiktok.com/upload?text=${encodedText}%20${encodedUrl}`,
         instagram: `https://www.instagram.com/`,
-        twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
+        twitter: `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
       };
       if (links[platform]) window.open(links[platform]);
     }
@@ -78,10 +78,10 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
 
               <Button
                 onClick={() => handleShare('twitter')}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-black hover:bg-gray-900 text-white font-bold py-3 rounded-2xl flex items-center justify-center gap-2 transition-all border border-white/20"
                 data-testid="button-share-twitter"
               >
-                𝕏 Sdílet na Twitteru
+                𝕏 Sdílet na X
               </Button>
 
               {navigator.share && (
