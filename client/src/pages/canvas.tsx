@@ -78,6 +78,7 @@ export default function CanvasPage() {
   });
   const [breadcrumbs, setBreadcrumbs] = useState<Layer[]>([currentLayer]);
   const [contributionCount, setContributionCount] = useState(0);
+  const [isUserReady, setIsUserReady] = useState(false);
 
   // Initialize anonymous user - create in database
   useEffect(() => {
@@ -107,11 +108,13 @@ export default function CanvasPage() {
           localStorage.setItem('chaos-guest-id', user.id);
           setCurrentUserId(user.id);
           setChaosCoins(user.chaosCoins || 100);
+          setIsUserReady(true);
         } catch (error) {
           console.error('[INIT ERROR]', error);
-          // Don't fallback to timestamp - just set loading state
-          // User MUST be created in database for contributions to work
+          setIsUserReady(true); // Still mark as ready even if initialization fails
         }
+      } else {
+        setIsUserReady(true);
       }
     };
     initializeAnonymousUser();
@@ -421,6 +424,18 @@ export default function CanvasPage() {
     
     investMutation.mutate({ contributionId, amount });
   };
+
+  // Show loading screen until user is initialized
+  if (!isUserReady) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="text-center">
+          <ChaosLogo variant="main" size="md" />
+          <p className="text-sm text-muted-foreground mt-4">Initializing your chaos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
