@@ -552,7 +552,7 @@ export default function CanvasPage() {
             <TabsList className="w-full rounded-none border-b" data-testid="main-tabs">
               <TabsTrigger value="canvas">Global Canvas</TabsTrigger>
               <TabsTrigger value="league">National League 🔥</TabsTrigger>
-              <TabsTrigger value="settings">Settings ⚙️</TabsTrigger>
+              <TabsTrigger value="profile">Profile ⚙️</TabsTrigger>
             </TabsList>
 
             {/* Canvas Tab */}
@@ -579,8 +579,8 @@ export default function CanvasPage() {
               <NationalChaosLeaderboard />
             </TabsContent>
 
-            {/* Settings Tab */}
-            <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="settings-tab">
+            {/* Profile Tab */}
+            <TabsContent value="profile" className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="profile-tab">
               <h2 className="font-heading text-2xl font-bold">Settings & Profile</h2>
               <YourMomModeToggle />
               <div className="pt-4 border-t space-y-4">
