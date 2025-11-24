@@ -36,6 +36,7 @@ import { GaryVeeOverlay } from '@/components/GaryVeeOverlay';
 import { LiveActivityTicker } from '@/components/LiveActivityTicker';
 import { UpgradeButton } from '@/components/UpgradeButton';
 import { useToast } from '@/hooks/use-toast';
+import { ChaosLogo } from '@/components/ChaosLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Share2, LogOut } from 'lucide-react';
@@ -258,7 +259,7 @@ export default function CanvasPage() {
       api.boostContribution(contributionId, currentUserId!, amount),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-      setChaosCoins(prev => prev - variables.amount);
+      setChaosCoins(chaosCoins - variables.amount);
       toast({ title: 'Boosted!', description: `Spent ${variables.amount} ChaosCoins` });
     },
     onError: () => {
@@ -305,13 +306,13 @@ export default function CanvasPage() {
       api.createInvestment(currentUserId!, contributionId, amount),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/investments/user', currentUserId] });
-      setChaosCoins(prev => prev - variables.amount);
+      setChaosCoins(chaosCoins - variables.amount);
       toast({ title: 'Investment made!', description: `Invested ${variables.amount} ChaosCoins` });
     },
   });
 
   // Mock data for meme stocks (would be fetched from API in production)
-  const [memeStocks] = useState<any[]>([
+  const [memeStocks] = useState([
     {
       contributionId: 's1',
       title: 'Epic Dragon Meme',
@@ -329,24 +330,27 @@ export default function CanvasPage() {
   ]);
 
   // Convert contributions to canvas format
-  const canvasContributions: CanvasContribution[] = contributions.map((c: Contribution) => ({
+  const canvasContributions: CanvasContribution[] = contributions.map((c: any) => ({
     id: c.id,
-    x: c.positionX,
-    y: c.positionY,
+    userId: c.userId,
+    contentType: c.contentType,
+    contentData: c.contentData,
+    positionX: parseFloat(c.positionX?.toString() || '0'),
+    positionY: parseFloat(c.positionY?.toString() || '0'),
     width: c.width,
     height: c.height,
-    type: c.contentType as 'image' | 'text',
-    data: c.contentData as any,
-    author: c.userId,
-    boostCount: c.boostCount,
+    boostCount: c.boostCount || 0,
+    viewCount: c.viewCount || 0,
+    marketPrice: c.marketPrice || '0',
   }));
 
   // Convert contributions to feed format (latest first)
   const contributionFeed = [...contributions]
     .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
     .slice(0, 20)
-    .map((c: Contribution) => ({
+    .map((c: any) => ({
       id: c.id,
+      layerId: currentLayer.id,
       userId: c.userId,
       username: c.userId.substring(0, 10),
       contentType: c.contentType,
@@ -499,7 +503,6 @@ export default function CanvasPage() {
                   layerId={currentLayer.id}
                   contributions={canvasContributions}
                   onAddContribution={handleAddContribution}
-                  isLoading={contributionsLoading}
                 />
               </div>
             </TabsContent>
@@ -574,24 +577,29 @@ export default function CanvasPage() {
             onScroll={handleScroll}
             className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide">
             {canvasContributions.length > 0 ? (
-              canvasContributions.map((contribution, idx) => (
-                <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
-                  <TikTokCard
-                    id={contribution.id}
-                    imageUrl={contribution.imageUrl}
-                    title={contribution.title || 'Chaos'}
-                    author={contribution.userId || 'unknown'}
-                    likes={Math.floor(Math.random() * 10000)}
-                    onLike={() => {
-                      handleBoost(contribution.id);
-                      if ((idx + 1) % 3 === 0) setShareOpen(true);
-                    }}
-                    onReact={(type) => {
-                      if (type === 'fire') handleBoost(contribution.id);
-                    }}
-                  />
-                </div>
-              ))
+              canvasContributions.map((contribution, idx) => {
+                const contentData = contribution.contentData as any;
+                const imageUrl = contentData?.url || '';
+                const title = contentData?.prompt || 'Chaos';
+                return (
+                  <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
+                    <TikTokCard
+                      id={contribution.id}
+                      imageUrl={imageUrl}
+                      title={title}
+                      author={contribution.userId || 'unknown'}
+                      likes={contribution.boostCount || Math.floor(Math.random() * 10000)}
+                      onLike={() => {
+                        handleBoost(contribution.id);
+                        if ((idx + 1) % 3 === 0) setShareOpen(true);
+                      }}
+                      onReact={(type) => {
+                        if (type === 'fire') handleBoost(contribution.id);
+                      }}
+                    />
+                  </div>
+                );
+              })
             ) : (
               <div className="h-screen flex items-center justify-center">
                 <p className="text-muted-foreground">Žádný obsah...</p>
