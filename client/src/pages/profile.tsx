@@ -2,12 +2,15 @@ import { motion } from 'framer-motion';
 import { Share2, LogOut, Zap, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/context/AppContext';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { LoginModal } from '@/components/mobile/LoginModal';
 import { UpgradeButton } from '@/components/UpgradeButton';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
+import { CreatorModal } from '@/components/mobile/CreatorModal';
+import { useToast } from '@/hooks/use-toast';
+import * as api from '@/lib/api';
 import type { Contribution } from '@shared/schema';
 
 interface UserProfile {
@@ -24,10 +27,13 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const [, setLocation] = useLocation();
-  const { t, currentUserId, chaosCoins } = useApp();
+  const { t, currentUserId, chaosCoins, setChaosCoins } = useApp();
+  const { toast } = useToast();
   const [loginOpen, setLoginOpen] = useState(false);
   const [liveFollowers, setLiveFollowers] = useState(4206900);
   const [glitchOffset, setGlitchOffset] = useState(0);
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [lastContributionTitle, setLastContributionTitle] = useState('');
   const isGuest = currentUserId?.startsWith('guest_');
 
   // Live follower counter - increments every 10s
@@ -45,6 +51,62 @@ export default function ProfilePage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // AI Mutation for content generation
+  const generateAIMutation = useMutation({
+    mutationFn: ({ prompt, style }: { prompt: string; style: string }) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        return Promise.reject(new Error('User not initialized'));
+      }
+      return api.generateAIContent(prompt, style, currentUserId);
+    },
+    onSuccess: async (data, variables) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        toast({ title: 'Error', description: 'User session expired', variant: 'destructive' });
+        return;
+      }
+      setLastContributionTitle(variables.prompt);
+      // Create contribution with AI-generated content
+      await api.createContribution({
+        userId: currentUserId,
+        layerId: 'global-1',
+        contentType: 'image',
+        contentData: {
+          url: data.url,
+          prompt: variables.prompt,
+          style: variables.style,
+        },
+        positionX: Math.random() * 800,
+        positionY: Math.random() * 600,
+        width: 300,
+        height: 200,
+      });
+      toast({ title: 'Contribution added!', description: 'Your creation is now on the canvas' });
+      setCreatorOpen(false);
+    },
+    onError: (error) => {
+      console.error('[AI ERROR]', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    },
+  });
+
+  const handleGenerateContent = async (prompt: string, style: string = 'meme') => {
+    if (!currentUserId || currentUserId.startsWith('guest_')) {
+      toast({ 
+        title: 'Initializing...', 
+        description: 'Setting up your account. Try again in a moment.',
+        variant: 'default'
+      });
+      return;
+    }
+    
+    try {
+      generateAIMutation.mutate({ prompt, style });
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    }
+  };
 
   // Mock data for demo
   const profile: UserProfile = {
@@ -345,20 +407,25 @@ export default function ProfilePage() {
         }}
       />
 
+      {/* Creator Modal */}
+      <CreatorModal
+        open={creatorOpen}
+        onOpenChange={setCreatorOpen}
+        onSubmit={handleGenerateContent}
+        isLoading={generateAIMutation.isPending}
+      />
+
       {/* Bottom Navigation */}
       <MobileBottomNav 
         activeTab="profile" 
         onTabChange={(tab) => {
-          if (tab === 'profile') {
-            // Already on profile
-          } else if (tab === 'mine') {
-            setLocation('/');
-          } else {
-            setLocation('/');
-          }
+          if (tab === 'canvas') setLocation('/canvas');
+          else if (tab === 'league') setLocation('/league');
+          else if (tab === 'profile') setLocation('/profile');
+          else if (tab === 'mine') setLocation('/');
         }}
         onCreateClick={() => {
-          setLocation('/');
+          setCreatorOpen(true);
         }}
       />
     </div>

@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Share2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { sounds } from '@/lib/sounds';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { CreatorModal } from '@/components/mobile/CreatorModal';
+import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
+import * as api from '@/lib/api';
 
 const COUNTRY_FLAGS: Record<string, string> = {
   'PH': '🇵🇭',
@@ -30,13 +35,72 @@ interface CountryRank {
 
 export default function LeaguePage() {
   const [, setLocation] = useLocation();
-  const { t } = useApp();
+  const { t, currentUserId, chaosCoins, setChaosCoins } = useApp();
+  const { toast } = useToast();
   const [liveEvent, setLiveEvent] = useState<string>('');
   const [userRankCZ, setUserRankCZ] = useState(420);
   const [userContributions, setUserContributions] = useState(69);
   const [prevRank, setPrevRank] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [countdownToNextRank, setCountdownToNextRank] = useState(10);
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [lastContributionTitle, setLastContributionTitle] = useState('');
+
+  // AI Mutation for content generation
+  const generateAIMutation = useMutation({
+    mutationFn: ({ prompt, style }: { prompt: string; style: string }) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        return Promise.reject(new Error('User not initialized'));
+      }
+      return api.generateAIContent(prompt, style, currentUserId);
+    },
+    onSuccess: async (data, variables) => {
+      if (!currentUserId || currentUserId.startsWith('guest_')) {
+        toast({ title: 'Error', description: 'User session expired', variant: 'destructive' });
+        return;
+      }
+      setLastContributionTitle(variables.prompt);
+      // Create contribution with AI-generated content
+      await api.createContribution({
+        userId: currentUserId,
+        layerId: 'global-1',
+        contentType: 'image',
+        contentData: {
+          url: data.url,
+          prompt: variables.prompt,
+          style: variables.style,
+        },
+        positionX: Math.random() * 800,
+        positionY: Math.random() * 600,
+        width: 300,
+        height: 200,
+      });
+      toast({ title: 'Contribution added!', description: 'Your creation is now on the canvas' });
+      setCreatorOpen(false);
+    },
+    onError: (error) => {
+      console.error('[AI ERROR]', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    },
+  });
+
+  const handleGenerateContent = async (prompt: string, style: string = 'meme') => {
+    if (!currentUserId || currentUserId.startsWith('guest_')) {
+      toast({ 
+        title: 'Initializing...', 
+        description: 'Setting up your account. Try again in a moment.',
+        variant: 'default'
+      });
+      return;
+    }
+    
+    try {
+      generateAIMutation.mutate({ prompt, style });
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    }
+  };
 
   // Mock leaderboard data
   const [leaderboard, setLeaderboard] = useState<CountryRank[]>([
@@ -390,6 +454,28 @@ export default function LeaguePage() {
           ))}
         </>
       )}
+
+      {/* Creator Modal */}
+      <CreatorModal
+        open={creatorOpen}
+        onOpenChange={setCreatorOpen}
+        onSubmit={handleGenerateContent}
+        isLoading={generateAIMutation.isPending}
+      />
+
+      {/* Bottom Navigation */}
+      <MobileBottomNav 
+        activeTab="league" 
+        onTabChange={(tab) => {
+          if (tab === 'canvas') setLocation('/canvas');
+          else if (tab === 'league') setLocation('/league');
+          else if (tab === 'profile') setLocation('/profile');
+          else if (tab === 'mine') setLocation('/');
+        }}
+        onCreateClick={() => {
+          setCreatorOpen(true);
+        }}
+      />
     </div>
   );
 }
