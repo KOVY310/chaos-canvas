@@ -594,6 +594,8 @@ export default function CanvasPage() {
           onTabChange={(tab) => {
             if (tab === 'profile') {
               setLocation('/profile');
+            } else if (tab === 'league') {
+              setLocation('/league');
             } else {
               setActiveTab(tab);
             }
