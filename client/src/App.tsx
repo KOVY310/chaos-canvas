@@ -7,6 +7,7 @@ import { AppProvider, useApp } from "@/context/AppContext";
 import { ChaosLogo } from "@/components/ChaosLogo";
 import CanvasPage from "@/pages/canvas";
 import ProfilePage from "@/pages/profile";
+import TodayPage from "@/pages/today";
 import NotFound from "@/pages/not-found";
 
 // Logo Header with Glitch
@@ -61,6 +62,7 @@ function DevIndicator() {
 function Router() {
   return (
     <Switch>
+      <Route path="/today" component={TodayPage} />
       <Route path="/" component={CanvasPage} />
       <Route path="/profile" component={ProfilePage} />
       <Route component={NotFound} />
