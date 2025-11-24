@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { LoginModal } from '@/components/mobile/LoginModal';
+import { UpgradeButton } from '@/components/UpgradeButton';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import type { Contribution } from '@shared/schema';
 
@@ -250,21 +251,34 @@ export default function ProfilePage() {
         </motion.div>
       )}
 
-      {/* AUTHENTICATED VIEW - After login show Chaos God badge */}
+      {/* AUTHENTICATED VIEW - After login show Chaos God badge + Upgrade button */}
       {!isGuest && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="px-4 mb-8 text-center"
+          className="px-4 mb-8"
         >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="inline-block mb-3"
-          >
-            👑
-          </motion.div>
-          <p className="text-sm font-heading font-bold text-yellow-300">Chaos God</p>
+          <div className="text-center mb-6">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              className="inline-block mb-3"
+            >
+              👑
+            </motion.div>
+            <p className="text-sm font-heading font-bold text-yellow-300">Chaos God</p>
+          </div>
+
+          {/* Upgrade/Buy Coins section */}
+          <div className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-2 border-yellow-400">
+            <h3 className="text-lg font-heading font-bold text-center mb-3 text-yellow-300">
+              💎 Kup ChaosCoins 💎
+            </h3>
+            <p className="text-xs text-center text-gray-200 mb-4">
+              Vyberte si počet coinů nebo se staň ChaosPro legeendou!
+            </p>
+            <UpgradeButton />
+          </div>
         </motion.div>
       )}
 
