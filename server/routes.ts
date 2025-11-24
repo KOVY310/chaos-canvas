@@ -12,8 +12,10 @@ import {
   insertChaosBubbleSchema,
   insertTransactionSchema,
   insertInvestmentSchema,
+  contributions,
   type Contribution,
 } from "@shared/schema";
+import { eq, desc } from "drizzle-orm";
 import * as Sentry from "@sentry/node";
 
 // WebSocket integration from blueprint
@@ -204,10 +206,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/contributions/user/:userId", async (req, res) => {
     try {
-      const contributions = await storage.db.select()
-        .from(storage.db._.users.contributions)
-        .where(storage.db._.users.contributions.userId.equals(req.params.userId));
-      res.json(contributions);
+      const userContributions = await storage.db
+        .select()
+        .from(contributions)
+        .where(eq(contributions.userId, req.params.userId))
+        .orderBy(desc(contributions.createdAt));
+      res.json(userContributions);
     } catch (error: any) {
       Sentry.captureException(error);
       res.status(500).json({ error: error.message });
