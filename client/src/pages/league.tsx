@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import * as api from '@/lib/api';
+import { queryClient } from '@/lib/queryClient';
 
 const COUNTRY_FLAGS: Record<string, string> = {
   'PH': '🇵🇭',
@@ -75,6 +76,7 @@ export default function LeaguePage() {
         width: 300,
         height: 200,
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', 'global-1'] });
       toast({ title: 'Contribution added!', description: 'Your creation is now on the canvas' });
       setCreatorOpen(false);
     },

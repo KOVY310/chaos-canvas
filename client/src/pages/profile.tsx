@@ -11,6 +11,7 @@ import { MobileBottomNav } from '@/components/mobile/MobileBottomNav';
 import { CreatorModal } from '@/components/mobile/CreatorModal';
 import { useToast } from '@/hooks/use-toast';
 import * as api from '@/lib/api';
+import { queryClient } from '@/lib/queryClient';
 import type { Contribution } from '@shared/schema';
 
 interface UserProfile {
@@ -81,6 +82,7 @@ export default function ProfilePage() {
         width: 300,
         height: 200,
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', 'global-1'] });
       toast({ title: 'Contribution added!', description: 'Your creation is now on the canvas' });
       setCreatorOpen(false);
     },
