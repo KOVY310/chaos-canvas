@@ -323,6 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(contribution);
     } catch (error: any) {
+      console.error('[CONTRIBUTION ERROR]', error.message, error.stack);
       Sentry.captureException(error);
       res.status(400).json({ error: error.message });
     }

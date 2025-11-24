@@ -212,8 +212,8 @@ export const insertContributionSchema = createInsertSchema(contributions, {
     style: z.string().optional(),
     text: z.string().optional(),
   }),
-  positionX: z.union([z.string(), z.number()]).transform(val => String(val)),
-  positionY: z.union([z.string(), z.number()]).transform(val => String(val)),
+  positionX: z.union([z.string(), z.number()]).transform(val => Number(val)),
+  positionY: z.union([z.string(), z.number()]).transform(val => Number(val)),
   width: z.number().min(10),
   height: z.number().min(10),
 }).omit({ id: true, createdAt: true, boostCount: true, viewCount: true, marketPrice: true });
