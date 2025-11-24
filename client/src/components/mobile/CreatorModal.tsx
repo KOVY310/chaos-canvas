@@ -59,16 +59,45 @@ export function CreatorModal({
     }
   };
 
-  const handleMicClick = () => {
-    setIsRecording(!isRecording);
-    if ('vibrate' in navigator) {
-      navigator.vibrate([100]);
+  const handleMicClick = async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setIsRecording(true);
+        
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+        
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach(track => track.stop());
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          setPrompt(prev => prev + ' [🎤 Voice recorded]');
+        };
+        
+        mediaRecorder.start();
+        
+        // Auto-stop after 10 seconds
+        setTimeout(() => {
+          if (mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            setIsRecording(false);
+          }
+        }, 10000);
+        
+        if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+      } catch (error) {
+        console.error('Microphone error:', error);
+        alert('Mikrofonový přístup denied');
+      }
+    } else {
+      setIsRecording(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="md:hidden w-full h-screen max-w-full rounded-none p-4 flex flex-col gap-0">
+      <DialogContent className="md:hidden w-full h-screen max-w-full rounded-none p-4 flex flex-col gap-3">
         <DialogHeader className="mb-4">
           <div className="flex items-center justify-between">
             <DialogTitle>Tvůj Chaos</DialogTitle>
@@ -105,7 +134,7 @@ export function CreatorModal({
         </div>
 
         {/* Prompt Input with Voice */}
-        <div className="mb-4 flex-1">
+        <div className="mb-0">
           <label className="text-sm font-medium block mb-2">Tvůj Nápad</label>
           <div className="relative flex gap-2">
             <Textarea
@@ -117,11 +146,11 @@ export function CreatorModal({
             />
             <motion.button
               whileTap={{ scale: 0.9 }}
-              onMouseDown={handleMicClick}
-              onMouseUp={() => setIsRecording(false)}
+              onClick={handleMicClick}
+              type="button"
               className={`p-2 rounded-lg transition-all ${
                 isRecording
-                  ? 'bg-red-500 text-white'
+                  ? 'bg-red-500 text-white animate-pulse'
                   : 'bg-primary/20 text-primary hover:bg-primary/30'
               }`}
               data-testid="button-voice"
