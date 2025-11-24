@@ -39,7 +39,8 @@ import { useToast } from '@/hooks/use-toast';
 import { ChaosLogo } from '@/components/ChaosLogo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Share2, LogOut } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Share2, LogOut, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LayerType, Contribution } from '@shared/schema';
 
@@ -80,6 +81,8 @@ export default function CanvasPage() {
   const [breadcrumbs, setBreadcrumbs] = useState<Layer[]>([currentLayer]);
   const [contributionCount, setContributionCount] = useState(0);
   const [isUserReady, setIsUserReady] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   // Initialize anonymous user - create in database
   useEffect(() => {
@@ -429,14 +432,137 @@ export default function CanvasPage() {
     investMutation.mutate({ contributionId, amount });
   };
 
-  // Show loading screen until user is initialized
+  // Show login screen until user is initialized
   if (!isUserReady) {
+    const handleEmailLogin = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!email.trim()) {
+        toast({ title: 'Error', description: 'Please enter your email', variant: 'destructive' });
+        return;
+      }
+      
+      setIsLoginLoading(true);
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email.trim(),
+            isAnonymous: false,
+            locale: locale || 'en-US',
+            countryCode: 'CZ',
+            username: email.split('@')[0],
+            password: '', // Email-based auth, no password
+          }),
+        });
+        
+        if (!response.ok) throw new Error('Login failed');
+        
+        const user = await response.json();
+        localStorage.setItem('chaos-guest-id', user.id);
+        setCurrentUserId(user.id);
+        setChaosCoins(user.chaosCoins || 100);
+        setIsUserReady(true);
+        toast({ title: 'Welcome!', description: `Signed in as ${email}` });
+      } catch (error) {
+        console.error('Login error:', error);
+        toast({ title: 'Error', description: 'Failed to login with email', variant: 'destructive' });
+      } finally {
+        setIsLoginLoading(false);
+      }
+    };
+
+    const handleGuestContinue = async () => {
+      setIsLoginLoading(true);
+      try {
+        const response = await fetch('/api/auth/anonymous', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            locale: locale || 'en-US',
+            countryCode: 'CZ',
+          }),
+        });
+        
+        if (!response.ok) throw new Error('Guest creation failed');
+        
+        const user = await response.json();
+        localStorage.setItem('chaos-guest-id', user.id);
+        setCurrentUserId(user.id);
+        setChaosCoins(user.chaosCoins || 100);
+        setIsUserReady(true);
+        toast({ title: 'Ready!', description: 'Continuing as guest' });
+      } catch (error) {
+        console.error('Guest error:', error);
+        toast({ title: 'Error', description: 'Failed to initialize', variant: 'destructive' });
+      } finally {
+        setIsLoginLoading(false);
+      }
+    };
+
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
-        <div className="text-center">
-          <ChaosLogo variant="main" size="md" />
-          <p className="text-sm text-muted-foreground mt-4">Initializing your chaos...</p>
-        </div>
+      <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-background to-background/80">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-sm mx-4 p-8 rounded-2xl border border-border bg-card shadow-xl space-y-6"
+        >
+          <div className="text-center">
+            <ChaosLogo variant="main" size="lg" />
+            <h1 className="font-heading text-2xl font-bold mt-4">ChaosCanvas</h1>
+            <p className="text-sm text-muted-foreground mt-2">Join the viral creative revolution</p>
+          </div>
+
+          <form onSubmit={handleEmailLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoginLoading}
+                  className="pl-9"
+                  data-testid="input-email"
+                />
+              </div>
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoginLoading}
+              data-testid="button-email-login"
+            >
+              {isLoginLoading ? 'Signing in...' : 'Sign In with Email'}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="px-2 bg-card text-muted-foreground">Or</span>
+            </div>
+          </div>
+
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={handleGuestContinue}
+            disabled={isLoginLoading}
+            data-testid="button-guest-continue"
+          >
+            {isLoginLoading ? 'Starting...' : 'Continue as Guest'}
+          </Button>
+
+          <p className="text-xs text-center text-muted-foreground">
+            No account needed. Create and share chaos instantly! 🎨
+          </p>
+        </motion.div>
       </div>
     );
   }
