@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Loader } from 'lucide-react';
@@ -11,13 +11,15 @@ export function UpgradeButton() {
   const [loading, setLoading] = useState<string | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // If NO userId, create a guest ID immediately
-  const userId = currentUserId || (() => {
-    const guestId = `guest_${Math.random().toString(36).substr(2, 9)}`;
-    setCurrentUserId(guestId);
-    return guestId;
-  })();
+  // Initialize userId - create guest ID if needed (safe in useEffect)
+  useEffect(() => {
+    if (!currentUserId) {
+      const guestId = `guest_${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentUserId(guestId);
+    }
+  }, []);
 
+  const userId = currentUserId;
   const isGuest = userId?.startsWith('guest_');
 
   const upgrade = async (priceId: string) => {
