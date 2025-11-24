@@ -35,6 +35,7 @@ import { CelebrationOverlay } from '@/components/CelebrationOverlay';
 import { AutoShareModal } from '@/components/mobile/AutoShareModal';
 import { GaryVeeOverlay } from '@/components/GaryVeeOverlay';
 import { LiveActivityTicker } from '@/components/LiveActivityTicker';
+import { UpgradeButton } from '@/components/UpgradeButton';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -640,6 +641,20 @@ export default function CanvasPage() {
                 <p className="font-heading font-bold text-lg">{contributionCount}</p>
               </div>
             </div>
+
+            {/* ChaosPro Upgrade Section */}
+            <div className="border-t pt-4">
+              <div className="p-6 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl border-2 border-yellow-400">
+                <h2 className="text-xl font-heading font-bold text-center mb-2 text-yellow-300">
+                  🔥 Staň se Chaos Legendou! 🔥
+                </h2>
+                <p className="text-sm text-center text-gray-200 mb-4">
+                  Unlock unlimited posts, exclusive features & cosmic power
+                </p>
+                <UpgradeButton />
+              </div>
+            </div>
+
             <div className="border-t pt-4 space-y-3">
               <LanguageCurrencySelector />
               <YourMomModeToggle />
