@@ -141,6 +141,19 @@ export default function CanvasPage() {
   useEffect(() => {
     const seedCanvas = async () => {
       try {
+        // FIRST: Ensure canvas layer exists
+        try {
+          await api.getCanvasLayer(currentLayer.id);
+        } catch (e) {
+          // Layer doesn't exist, create it
+          await api.createCanvasLayer({
+            layerType: currentLayer.type,
+            regionCode: currentLayer.regionCode,
+            name: currentLayer.name,
+            zoomLevel: 0,
+          });
+        }
+
         const existingContributions = await api.getContributionsByLayer(currentLayer.id);
         if (existingContributions.length === 0) {
           // 30 VARIATIONS - Flying Svíčková in 30 STYLES
