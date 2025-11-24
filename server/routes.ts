@@ -410,11 +410,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/ai/generate", async (req, res) => {
     try {
-      const { prompt, style = "meme", userId } = req.body;
+      let { prompt, style = "meme", userId } = req.body;
       
       if (!prompt || !userId) {
         return res.status(400).json({ error: "Missing prompt or userId" });
       }
+
+      // Use user's prompt, NOT seed prompt
+      prompt = String(prompt).trim();
 
       // Style mappings for Hugging Face Stable Diffusion
       const styleMap: Record<string, string> = {
