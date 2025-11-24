@@ -50,9 +50,13 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
             transition={{ type: 'spring', damping: 20 }}
             className="w-full max-w-md bg-gradient-to-br from-gray-900 to-black rounded-t-3xl p-6 border-t border-purple-500/20"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-labelledby="share-title"
+            aria-describedby="share-description"
           >
             {/* Header */}
-            <h2 className="text-xl font-heading font-bold text-white mb-6">Sdílet můj chaos</h2>
+            <h2 id="share-title" className="text-xl font-heading font-bold text-white mb-6">Sdílet můj chaos</h2>
+            <p id="share-description" className="sr-only">Sdíley svůj obsah na sociálních sítích</p>
 
             {/* Share buttons */}
             <div className="space-y-3">

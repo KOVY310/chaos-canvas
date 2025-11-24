@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, Plus, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -100,6 +100,7 @@ export function CreatorModal({
       <DialogContent className="md:hidden w-full h-screen max-w-full rounded-none p-4 flex flex-col gap-3">
         <DialogHeader className="mb-4">
           <DialogTitle>Tvůj Chaos</DialogTitle>
+          <DialogDescription>Vytváření obsahu pro nekonečné plátno</DialogDescription>
         </DialogHeader>
 
         {/* Style Toggles */}
