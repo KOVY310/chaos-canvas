@@ -42,11 +42,14 @@ export function useWebSocket(layerId: string | null, options: UseWebSocketOption
   }, [layerId]);
 
   useEffect(() => {
-    if (!layerId) return;
+    if (!layerId || !window.location.host || window.location.host.includes('undefined')) return;
 
     // Determine protocol and construct WebSocket URL
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+    // Skip WebSocket if URL is invalid (Vite HMR issue)
+    if (!wsUrl || wsUrl.includes('undefined')) return;
 
     try {
       ws.current = new WebSocket(wsUrl);

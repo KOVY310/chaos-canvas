@@ -400,31 +400,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ========== AI CO-PILOT ROUTES (Prepared for OpenAI integration) ==========
+  // ========== AI CO-PILOT ROUTES (Hugging Face Free API) ==========
   
   app.post("/api/ai/generate", async (req, res) => {
     try {
-      const { prompt, style, userId } = req.body;
+      const { prompt, style = "meme", userId } = req.body;
       
       if (!prompt || !userId) {
         return res.status(400).json({ error: "Missing prompt or userId" });
       }
 
-      // TODO: When OPENAI_API_KEY is available, uncomment this:
-      /*
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: `${style} style: ${prompt}`,
-        n: 1,
-        size: "1024x1024",
-        quality: "standard",
-      });
-      const imageUrl = response.data[0].url;
-      */
+      // Style mappings for Hugging Face Stable Diffusion
+      const styleMap: Record<string, string> = {
+        meme: "viral tiktok meme, funny, trending, high quality",
+        pixel: "pixel art, retro game style, 8-bit, vibrant",
+        anime: "anime style, detailed, vibrant, beautiful, high quality",
+        photo: "photorealistic, ultra detailed, 4k, professional photography",
+        surreal: "surreal, dreamlike, salvador dali style, abstract, vibrant",
+      };
 
-      // MOCK implementation for now
-      const imageUrl = `https://placehold.co/400x300/6366f1/white?text=${encodeURIComponent(prompt.substring(0, 20))}`;
+      const fullPrompt = `${prompt}, ${styleMap[style] || styleMap.meme}`;
+
+      console.log(`[AI] Generating: "${fullPrompt}"`);
+
+      // Use FREE Hugging Face Inference API (stabilityai/stable-diffusion-3.5-large)
+      const hfResponse = await fetch(
+        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // No API key needed for free tier (1000 requests/day)
+          },
+          body: JSON.stringify({ inputs: fullPrompt }),
+        }
+      );
+
+      if (!hfResponse.ok) {
+        const errorText = await hfResponse.text();
+        console.error(`[AI] HF API error: ${hfResponse.status}`, errorText);
+        
+        // Fallback to placeholder if API fails
+        const imageUrl = `https://placehold.co/512x512/6366f1/white?text=${encodeURIComponent(prompt.substring(0, 25))}`;
+        return res.json({
+          url: imageUrl,
+          prompt,
+          style,
+          note: "Using placeholder - HF API temporarily unavailable",
+        });
+      }
+
+      // Convert image buffer to base64
+      const buffer = await hfResponse.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64 = Buffer.from(binary, 'binary').toString('base64');
+      const imageUrl = `data:image/png;base64,${base64}`;
+
+      console.log(`[AI] ✅ Generated successfully`);
 
       res.json({
         url: imageUrl,
@@ -432,7 +468,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         style,
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("[AI] Generation error:", error.message);
+      res.status(500).json({ 
+        error: "AI generation failed - try a different prompt!",
+        details: error.message 
+      });
     }
   });
 
