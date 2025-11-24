@@ -423,41 +423,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[AI] Generating: "${fullPrompt}"`);
 
-      // Use FREE Hugging Face Inference API (stabilityai/stable-diffusion-3.5-large)
-      const hfResponse = await fetch(
-        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large",
+      // Use FREE Hugging Face Inference API - FLUX.1-schnell (ultra-fast, no limits!)
+      let hfResponse = await fetch(
+        "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // No API key needed for free tier (1000 requests/day)
           },
           body: JSON.stringify({ inputs: fullPrompt }),
         }
       );
 
+      // Fallback to Stable Diffusion v1.5 if FLUX fails
+      if (!hfResponse.ok) {
+        console.log(`[AI] FLUX.1-schnell failed (${hfResponse.status}), trying fallback...`);
+        hfResponse = await fetch(
+          "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ inputs: fullPrompt }),
+          }
+        );
+      }
+
       if (!hfResponse.ok) {
         const errorText = await hfResponse.text();
-        console.error(`[AI] HF API error: ${hfResponse.status}`, errorText);
+        console.error(`[AI] Both HF APIs failed: ${hfResponse.status}`, errorText);
         
-        // Fallback to placeholder if API fails
+        // Fallback to placeholder only if both APIs fail
         const imageUrl = `https://placehold.co/512x512/6366f1/white?text=${encodeURIComponent(prompt.substring(0, 25))}`;
         return res.json({
           url: imageUrl,
           prompt,
           style,
-          note: "Using placeholder - HF API temporarily unavailable",
+          note: "Using placeholder - HF APIs temporarily unavailable",
         });
       }
 
       // Convert image buffer to base64
       const buffer = await hfResponse.arrayBuffer();
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      const base64 = Buffer.from(binary, 'binary').toString('base64');
+      const base64 = Buffer.from(buffer).toString('base64');
       const imageUrl = `data:image/png;base64,${base64}`;
 
       console.log(`[AI] ✅ Generated successfully`);
