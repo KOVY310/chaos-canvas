@@ -79,15 +79,36 @@ export default function CanvasPage() {
   const [breadcrumbs, setBreadcrumbs] = useState<Layer[]>([currentLayer]);
   const [contributionCount, setContributionCount] = useState(0);
 
-  // Initialize anonymous user
+  // Initialize anonymous user - create in database
   useEffect(() => {
-    if (!currentUserId) {
-      const guestId = `guest_${Date.now()}`;
-      localStorage.setItem('chaos-guest-id', guestId);
-      setCurrentUserId(guestId);
-      setChaosCoins(100);
-    }
-  }, [currentUserId, setCurrentUserId, setChaosCoins]);
+    const initializeAnonymousUser = async () => {
+      if (!currentUserId) {
+        try {
+          const guestId = `guest_${Date.now()}`;
+          // Create user in database
+          const response = await fetch('/api/auth/anonymous', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              locale: locale || 'en-US',
+              countryCode: 'CZ',
+            }),
+          });
+          const user = await response.json();
+          localStorage.setItem('chaos-guest-id', user.id || guestId);
+          setCurrentUserId(user.id || guestId);
+          setChaosCoins(user.chaosCoins || 100);
+        } catch (error) {
+          console.error('Failed to create anonymous user:', error);
+          const guestId = `guest_${Date.now()}`;
+          localStorage.setItem('chaos-guest-id', guestId);
+          setCurrentUserId(guestId);
+          setChaosCoins(100);
+        }
+      }
+    };
+    initializeAnonymousUser();
+  }, [currentUserId, setCurrentUserId, setChaosCoins, locale]);
 
   // Auto-open creator modal if coming from /today
   useEffect(() => {
