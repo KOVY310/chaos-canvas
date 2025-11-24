@@ -126,7 +126,23 @@ export default function LeaguePage() {
   const distanceTo1st = czRank ? leaderboard[0].contributions - czRank.contributions : 0;
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-purple-900 via-black to-pink-900 pb-20">
+    <div className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-purple-900 via-black to-pink-900 pb-32 md:pb-20">
+      {/* Mobile-only floating button */}
+      <div className="md:hidden fixed bottom-24 left-4 right-4 z-30">
+        <motion.button
+          onClick={() => {
+            localStorage.setItem('openCreatorModal', 'true');
+            setLocation('/canvas');
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full bg-gradient-to-r from-orange-500 via-pink-500 to-rose-500 hover:from-orange-600 hover:via-pink-600 hover:to-rose-600 text-white rounded-2xl shadow-xl transition-all py-3 px-4 font-heading font-bold text-sm"
+          data-testid="button-add-chaos-mobile-league"
+        >
+          ⚡ Přidej chaos & posuň Česko!
+        </motion.button>
+      </div>
+
       {/* Animated background */}
       <motion.div
         animate={{
