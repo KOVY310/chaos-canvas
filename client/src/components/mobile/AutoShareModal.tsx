@@ -52,16 +52,7 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-heading font-bold text-white">Sdílet můj chaos</h2>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors"
-                data-testid="button-close-share"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <h2 className="text-xl font-heading font-bold text-white mb-6">Sdílet můj chaos</h2>
 
             {/* Share buttons */}
             <div className="space-y-3">
