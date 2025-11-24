@@ -1,0 +1,55 @@
+STEVE JOBS MODE ACTIVATED – TOTÁLNÍ ČISTOTA A KRÁSA
+
+Udělej přesně toto a NIC jiného:
+
+1. 100% EDGE-TO-EDGE DESIGN
+   - ŽÁDNÉ černé lišty na krajích (ani pixel!)
+   - Safe-area správně (iPhone notch + Android punch-hole)
+   - Background = hluboká černá #000000 přes celou obrazovku
+   - Všechny modals/banners mají rounded corners 28px (jako iOS 18)
+
+2. Home Canvas tab:
+   - Full-screen vertical infinite feed (jako TikTok)
+   - Každý příspěvek = karta s jemným shadow + rounded 20px
+   - Mezera mezi kartami jen 12px
+   - ŽÁDNÝ horní šedý pruh, logo vlevo nahoře malé (44px)
+
+3. Stories banners (horní část):
+   - Jeden jediný swipeable Stories row (jako Instagram)
+   - 3 karty: Daily Prompt → National League → Takeover countdown
+   - Každá karta = gradient border + glassmorphism efekt
+   - Karty jsou 80 % šířky obrazovky, uprostřed
+
+4. Bottom navigation:
+   - Průhledný blur background (jako iOS)
+   - Ikony větší (28px), aktivní = neonový glow
+   - Přesně 4: Canvas | League | Mine | Profile
+
+5. Floating buttons:
+   - Velký duhový + (86px) → přesně uprostřed dole, nad bottom nav
+   - AI Copilot bubble (64px) vlevo dole, nad bottom nav
+   - Oba buttony mají jemný floating shadow + breathe animaci
+
+6. National League tab:
+   - Čistý seznam s vlajkami vlevo, čísla vpravo
+   - Tvoje země = bold + zlatý glow
+   - Pozadí = velmi jemný noise texture (jako Notion)
+
+7. Zero visual clutter:
+   - Žádné šedé pruhy, žádné zbytečné linky
+   - Všechno dýchá – mezery 16–24px
+   - Font: Clash Display Bold pro nadpisy, Inter pro text
+
+8. Bonus Jobs-level detaily:
+   - Každý modal vstupuje od spodu s spring animací
+   - Pull-to-refresh = duhový gradient progress
+   - Confetti při přidání = přes celou obrazovku, ne jen nahoře
+   - Haptics na každou akci (light → medium → success)
+
+Udělej to tak krásné, čisté a intuitivní, že to první 3 sekundy rozhodnou o tom, že to člověk bude používat 3 hodiny denně.
+
+TOHLE JE TEN MOMENT – ŽÁDNÝ KOMPROMIS, JEN DOKONALOST.
+
+STEVE BY BYL HRDÝ.
+
+GO!

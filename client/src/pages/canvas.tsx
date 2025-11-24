@@ -357,16 +357,21 @@ export default function CanvasPage() {
         )}
       </div>
 
-      {/* MOBILE LAYOUT - TIKTOK STYLE */}
-      <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background">
+      {/* MOBILE LAYOUT - STEVE JOBS PERFECTION */}
+      <div className="md:hidden flex flex-col h-screen w-full overflow-hidden bg-background relative">
         <ShareChaosModal open={shareOpen} onOpenChange={setShareOpen} />
+
+        {/* Logo - Top left 44px */}
+        <div className="absolute top-3 left-4 z-30 w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-heading font-bold text-white text-lg">
+          C
+        </div>
 
         {/* Stories Banner */}
         {activeTab === 'canvas' && <StoriesBannerSwipe />}
 
         {/* Main Content - Vertical Infinite Feed */}
         {activeTab === 'canvas' && (
-          <div className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-20">
+          <div className="flex-1 overflow-y-scroll snap-y snap-mandatory pb-24 scrollbar-hide">
             {canvasContributions.length > 0 ? (
               canvasContributions.map((contribution, idx) => (
                 <div key={contribution.id} className="snap-center h-screen flex-shrink-0">
@@ -440,7 +445,7 @@ export default function CanvasPage() {
           </div>
         )}
 
-        {/* Creator Modal */}
+        {/* Creator Modal with spring animation */}
         <CreatorModal
           open={creatorOpen}
           onOpenChange={setCreatorOpen}
@@ -448,15 +453,20 @@ export default function CanvasPage() {
           isLoading={createContributionMutation.isPending}
         />
 
-        {/* Floating Rainbow Add Button (Center Bottom) */}
+        {/* Floating Rainbow Add Button (86px, 100% centered, breathing animation) */}
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setCreatorOpen(true)}
-          className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white shadow-2xl z-40 flex items-center justify-center hover:shadow-3xl active:scale-90 transition-all border-4 border-white/20"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={() => {
+            setCreatorOpen(true);
+            if ('vibrate' in navigator) navigator.vibrate([20, 10, 20]);
+          }}
+          className="md:hidden fixed bottom-28 left-1/2 -translate-x-1/2 w-24 h-24 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white z-40 flex items-center justify-center shadow-lg breathe"
           data-testid="button-create-floating"
         >
-          <Plus className="w-10 h-10" />
+          <Plus className="w-12 h-12" />
         </motion.button>
 
         {/* AI Co-Pilot Bubble */}

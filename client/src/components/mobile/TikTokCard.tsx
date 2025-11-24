@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Share2, Flame, Skull } from 'lucide-react';
+import { Heart, Share2 } from 'lucide-react';
 
 interface TikTokCardProps {
   id: string;
@@ -31,6 +31,14 @@ export function TikTokCard({
       setLiked(true);
       setLikeAnimation(true);
       onLike?.();
+      if ('vibrate' in navigator) navigator.vibrate([10, 5, 20]);
+      if (typeof window !== 'undefined' && (window as any).confetti) {
+        (window as any).confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+        });
+      }
       setTimeout(() => setLikeAnimation(false), 600);
     }
   };
@@ -47,11 +55,13 @@ export function TikTokCard({
         // Swipe right = fire
         setReaction('fire');
         onReact?.('fire');
+        if ('vibrate' in navigator) navigator.vibrate([15, 10, 15]);
         setTimeout(() => setReaction(null), 800);
       } else {
         // Swipe left = nuke
         setReaction('nuke');
         onReact?.('nuke');
+        if ('vibrate' in navigator) navigator.vibrate([20, 5, 20]);
         setTimeout(() => setReaction(null), 800);
       }
     }
@@ -59,85 +69,115 @@ export function TikTokCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="w-full h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-card to-background"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="w-full h-screen flex flex-col items-center justify-center p-3 bg-background"
       onDoubleClick={handleDoubleClick}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Card Container */}
-      <div className="w-full max-w-sm h-96 rounded-2xl overflow-hidden relative group">
+      {/* Card Container - 20px rounded, subtle shadow, 12px gaps */}
+      <motion.div
+        className="w-full h-[calc(100vh-140px)] rounded-md bg-gradient-to-br from-purple-600/40 to-pink-600/40 overflow-hidden relative group shadow-lg"
+        initial={{ scale: 0.98 }}
+        animate={{ scale: 1 }}
+      >
         {/* Image */}
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-            <p className="text-white text-center px-4 font-heading font-bold">{title}</p>
+          <div className="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center p-6">
+            <p className="text-white text-center font-heading font-bold text-2xl line-clamp-4">
+              {title}
+            </p>
           </div>
         )}
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-        {/* Info */}
+        {/* Info at bottom */}
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
           <p className="font-heading font-bold text-lg line-clamp-2">{title}</p>
-          <p className="text-sm text-white/80">@{author}</p>
+          <p className="text-sm text-white/70 mt-1">@{author}</p>
         </div>
 
         {/* Reaction Overlay */}
         {reaction && (
           <motion.div
-            initial={{ scale: 0.5, opacity: 1 }}
-            animate={{ scale: 1.5, opacity: 0 }}
+            initial={{ scale: 0.3, opacity: 1 }}
+            animate={{ scale: 2, opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center text-6xl pointer-events-none"
+            className="absolute inset-0 flex items-center justify-center text-7xl pointer-events-none"
           >
             {reaction === 'fire' ? '🔥' : '💀'}
           </motion.div>
         )}
 
-        {/* Like Animation */}
+        {/* Like Animation - Flying hearts */}
         {likeAnimation && (
-          <motion.div
-            initial={{ scale: 0, opacity: 1 }}
-            animate={{ scale: 1.5, opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            className="absolute inset-0 flex items-center justify-center text-6xl pointer-events-none"
-          >
-            ❤️
-          </motion.div>
+          <>
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{
+                  opacity: 1,
+                  y: 0,
+                  x: Math.cos((i / 8) * Math.PI * 2) * 30,
+                }}
+                animate={{
+                  opacity: 0,
+                  y: -200,
+                  x: Math.cos((i / 8) * Math.PI * 2) * 60,
+                }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                className="absolute left-1/2 top-1/2 text-4xl pointer-events-none"
+              >
+                ❤️
+              </motion.div>
+            ))}
+          </>
         )}
-      </div>
+      </motion.div>
 
-      {/* Actions */}
-      <div className="mt-6 flex gap-8 justify-center">
+      {/* Actions - below card with 12px gap */}
+      <div className="w-full flex gap-6 justify-center mt-3 px-4">
         <motion.button
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.85 }}
           onClick={() => {
             setLiked(!liked);
             onLike?.();
+            if ('vibrate' in navigator) navigator.vibrate([5, 5, 10]);
           }}
-          className="flex flex-col items-center gap-1"
+          className="flex flex-col items-center gap-1 group"
           data-testid="button-like"
         >
-          <Heart
-            className="w-7 h-7"
-            fill={liked ? 'currentColor' : 'none'}
-            color={liked ? '#ef4444' : 'currentColor'}
-          />
-          <span className="text-sm font-medium">{likes}</span>
+          <motion.div whileHover={{ scale: 1.1 }}>
+            <Heart
+              className="w-7 h-7 transition-all group-hover:text-red-500"
+              fill={liked ? 'currentColor' : 'none'}
+              color={liked ? '#ef4444' : 'currentColor'}
+            />
+          </motion.div>
+          <span className="text-xs font-medium text-muted-foreground">
+            {likes.toLocaleString()}
+          </span>
         </motion.button>
 
         <motion.button
-          whileTap={{ scale: 0.9 }}
-          className="flex flex-col items-center gap-1"
+          whileTap={{ scale: 0.85 }}
+          className="flex flex-col items-center gap-1 group"
           data-testid="button-share"
         >
-          <Share2 className="w-7 h-7" />
-          <span className="text-sm font-medium">Sdílet</span>
+          <motion.div whileHover={{ scale: 1.1 }}>
+            <Share2 className="w-7 h-7 transition-all group-hover:text-primary" />
+          </motion.div>
+          <span className="text-xs font-medium text-muted-foreground">Sdílet</span>
         </motion.button>
       </div>
     </motion.div>
