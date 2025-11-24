@@ -6,26 +6,44 @@ import { LoginModal } from '@/components/mobile/LoginModal';
 import { useToast } from '@/hooks/use-toast';
 
 export function UpgradeButton() {
-  const { currentUserId } = useApp();
+  const { currentUserId, setCurrentUserId } = useApp();
   const { toast } = useToast();
   const [loading, setLoading] = useState<string | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
-  const isGuest = currentUserId?.startsWith('guest_');
+
+  // If NO userId, create a guest ID immediately
+  const userId = currentUserId || (() => {
+    const guestId = `guest_${Math.random().toString(36).substr(2, 9)}`;
+    setCurrentUserId(guestId);
+    return guestId;
+  })();
+
+  const isGuest = userId?.startsWith('guest_');
 
   const upgrade = async (priceId: string) => {
     if (isGuest) {
+      console.log('👤 Guest user detected, opening login modal');
       setLoginOpen(true);
+      return;
+    }
+    
+    if (!userId) {
+      toast({ 
+        title: "Chyba", 
+        description: "Chyba s user ID - zkus znovu",
+        variant: "destructive" 
+      });
       return;
     }
     
     try {
       setLoading(priceId);
-      console.log('🔄 Upgrading with userId:', currentUserId, 'priceId:', priceId);
+      console.log('✅ Authenticated user - userId:', userId, 'priceId:', priceId);
       
       const res = await fetch('/api/stripe/checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, userId: currentUserId })
+        body: JSON.stringify({ userId, priceId })
       });
       
       const data = await res.json();
@@ -41,7 +59,7 @@ export function UpgradeButton() {
       }
       
       if (data.sessionUrl) {
-        console.log('✅ Redirecting to:', data.sessionUrl);
+        console.log('✅ Redirecting to Stripe:', data.sessionUrl);
         window.location.href = data.sessionUrl;
       } else {
         toast({ 
