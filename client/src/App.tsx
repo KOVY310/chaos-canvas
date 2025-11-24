@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider, useApp } from "@/context/AppContext";
 import { ChaosLogo } from "@/components/ChaosLogo";
+import { A2HSPrompt } from "@/components/A2HSPrompt";
 import CanvasPage from "@/pages/canvas";
 import ProfilePage from "@/pages/profile";
 import TodayPage from "@/pages/today";
@@ -79,6 +80,7 @@ function App() {
       <TooltipProvider>
         <AppProvider>
           <Toaster />
+          <A2HSPrompt />
           <LogoHeader />
           <DevIndicator />
           <Router />
