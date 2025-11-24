@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useApp } from '@/context/AppContext';
-import { useWebSocket } from '@/hooks/useWebSocket';
 import { queryClient } from '@/lib/queryClient';
 import * as api from '@/lib/api';
 import { sounds } from '@/lib/sounds';
@@ -255,17 +254,8 @@ export default function CanvasPage() {
     enabled: !!currentUserId,
   });
 
-  // WebSocket for real-time updates (disabled for now - using polling instead)
-  // TODO: Re-enable WebSocket when HMR is properly configured
-  // const { isConnected, send } = useWebSocket(currentLayer.id, {
-  //   onMessage: (message) => {
-  //     if (message.type === 'new_contribution') {
-  //       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-  //     } else if (message.type === 'contribution_updated') {
-  //       queryClient.invalidateQueries({ queryKey: ['/api/contributions/layer', currentLayer.id] });
-  //     }
-  //   },
-  // });
+  // WebSocket disabled - using polling instead (Vite HMR conflict issue)
+  // Real-time updates handled via TanStack Query polling
 
   // Mutations
   const createContributionMutation = useMutation({
@@ -406,13 +396,18 @@ export default function CanvasPage() {
     });
   };
 
-  const handleGenerateContent = async (prompt: string, style: string) => {
+  const handleGenerateContent = async (prompt: string, style: string = 'meme') => {
     if (!currentUserId) {
-      toast({ title: 'Error', description: 'Please login first', variant: 'destructive' });
+      toast({ title: 'Please login', description: 'Sign in to generate content', variant: 'destructive' });
       return;
     }
     
-    generateAIMutation.mutate({ prompt, style });
+    try {
+      generateAIMutation.mutate({ prompt, style });
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast({ title: 'Error', description: 'Failed to generate content', variant: 'destructive' });
+    }
   };
 
   const handleBoost = (contributionId: string) => {
