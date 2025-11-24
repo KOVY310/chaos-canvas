@@ -82,45 +82,10 @@ export default function CanvasPage() {
   const [email, setEmail] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
-  // Initialize anonymous user - create in database
+  // Show login modal on first load
   useEffect(() => {
-    const initializeAnonymousUser = async () => {
-      if (!currentUserId) {
-        try {
-          // Create user in database via API
-          const response = await fetch('/api/auth/anonymous', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              locale: locale || 'en-US',
-              countryCode: 'CZ',
-            }),
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Failed to create anonymous user: ${response.status}`);
-          }
-          
-          const user = await response.json();
-          
-          if (!user || !user.id) {
-            throw new Error('Invalid user response');
-          }
-          
-          localStorage.setItem('chaos-guest-id', user.id);
-          setCurrentUserId(user.id);
-          setChaosCoins(user.chaosCoins || 100);
-          setIsUserReady(true);
-        } catch (error) {
-          console.error('[INIT ERROR]', error);
-          setIsUserReady(true); // Still mark as ready even if initialization fails
-        }
-      } else {
-        setIsUserReady(true);
-      }
-    };
-    initializeAnonymousUser();
-  }, [currentUserId, setCurrentUserId, setChaosCoins, locale]);
+    setIsUserReady(false);
+  }, []);
 
   // Auto-open creator modal if coming from /today
   useEffect(() => {
@@ -376,11 +341,8 @@ export default function CanvasPage() {
   };
 
   const handleAddContribution = async (x: number, y: number) => {
-    // For now, just show a message prompting user to use AI Co-Pilot
-    toast({
-      title: 'Use AI Co-Pilot',
-      description: 'Use the AI Co-Pilot panel on the left to generate content!',
-    });
+    // Open creator modal
+    setCreatorOpen(true);
   };
 
   const handleGenerateContent = async (prompt: string, style: string = 'meme') => {
