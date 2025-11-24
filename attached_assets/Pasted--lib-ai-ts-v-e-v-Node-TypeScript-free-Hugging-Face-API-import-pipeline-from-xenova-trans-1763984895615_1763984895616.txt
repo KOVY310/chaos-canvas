@@ -1,0 +1,51 @@
+// lib/ai.ts (vše v Node/TypeScript, free Hugging Face API)
+import { pipeline } from '@xenova/transformers'; // Free self-host Whisper
+import { createCanvas, loadImage } from 'canvas'; // Free image gen
+import ffmpeg from 'ffmpeg-static'; // Free video
+
+// 1. Voice → Text (Whisper – free self-host)
+export async function voiceToText(audioBuffer: Buffer, language = 'cs'): Promise<string> {
+  const transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-large-v3');
+  const result = await transcriber(audioBuffer, { language });
+  return result.text; // Vrátí text z hlasu (podporuje CZ/FIL/ID/TR)
+}
+
+// 2. Text → Image (Stable Diffusion via free Hugging Face API)
+export async function textToImage(prompt: string, style = 'meme'): Promise<string> {
+  // Free Hugging Face Inference API (bez klíče do 1000 requests/den)
+  const response = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ inputs: `${prompt}, ${style} style, viral tiktok, high quality` })
+  });
+  const buffer = await response.arrayBuffer();
+  const image = Buffer.from(buffer);
+  // Ulož jako base64 nebo URL
+  return `data:image/png;base64,${image.toString('base64')}`;
+}
+
+// 3. Text → Video (Open-Sora via free FFmpeg + simple gen)
+export async function textToVideo(prompt: string, duration = 15): Promise<string> {
+  // Simple free gen – vytvoř frame z image a animuj
+  const image = await textToImage(prompt, 'surreal');
+  const canvas = createCanvas(1024, 1024);
+  const ctx = canvas.getContext('2d');
+  ctx.fillText(prompt, 50, 50); // Simple anim
+  const videoBuffer = await new Promise((resolve) => {
+    // FFmpeg simple loop
+    const cmd = ffmpeg(image).input(' -t ' + duration + ' -r 1 image.png');
+    cmd.output(resolve('video.mp4'));
+  });
+  return 'data:video/mp4;base64,' + videoBuffer.toString('base64');
+}
+
+// Multimodální flow (voice/text → image/video)
+export async function generateChaos(inputType: 'text' | 'voice', inputData: string | Buffer, style = 'meme'): Promise<{ image: string, video: string, text: string }> {
+  let text = inputType === 'voice' ? await voiceToText(inputData as Buffer) : inputData as string;
+  const image = await textToImage(text, style);
+  const video = await textToVideo(text, 15); // Jen pro Pro
+  return { image, video, text };
+}
+
+// Test v appce
+// v AICopilotPanel.tsx: generateChaos('text', 'Létající svíčková nad Prahou', 'meme').then(res => setImage(res.image));
