@@ -35,9 +35,9 @@ export function AutoShareModal({ open, onClose, contentTitle, imageUrl }: AutoSh
     const text = `Právě jsem přidal svou verzi "${finalTitle}" 😭🔥 chaos.canvas`;
     const baseUrl = window.location.origin;
     
-    // Build SHORT share URL with cache-busting timestamp so Twitter refetches OG tags
+    // Build share URL with /share/{title} path so Twitter crawls OG tags correctly
     const timestamp = Date.now();
-    const shareUrl = `${baseUrl}?ref=${platform}&og_title=${encodeURIComponent(finalTitle)}&t=${timestamp}`;
+    const shareUrl = `${baseUrl}/share/${encodeURIComponent(finalTitle)}?ref=${platform}&t=${timestamp}`;
     console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'Share URL:', shareUrl);
 
     if (platform === 'native' && navigator.share) {
