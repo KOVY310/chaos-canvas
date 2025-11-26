@@ -55,9 +55,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const title = decodeURIComponent(ogTitle).substring(0, 60);
       console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
       
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      // Point to our own SVG endpoint - Twitter can access our server
-      const ogImageUrl = `${baseUrl}/api/og/share?og_title=${encodeURIComponent(title)}`;
+      // Point directly to placehold.co (Twitter can access public URLs, not dev servers)
+      const ogImageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(title)}`;
       
       const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
