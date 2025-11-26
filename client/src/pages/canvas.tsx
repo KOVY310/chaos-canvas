@@ -671,9 +671,15 @@ export default function CanvasPage() {
                             if (type === 'fire') handleBoost(contribution.id);
                           }}
                           onShare={() => {
-                            console.log('[CANVAS] Share clicked for:', title);
+                            console.log('[CANVAS] 🔥 Share clicked for contribution:', {
+                              contributionId: contribution.id,
+                              title: title,
+                              prompt: contentData?.prompt,
+                            });
                             setLastContributionTitle(title);
+                            console.log('[CANVAS] ✅ Set lastContributionTitle:', title);
                             setAutoShareOpen(true);
+                            console.log('[CANVAS] ✅ Opened AutoShareModal');
                           }}
                         />
                       </div>
