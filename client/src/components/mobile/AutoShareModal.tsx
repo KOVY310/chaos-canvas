@@ -10,9 +10,12 @@ interface AutoShareModalProps {
 
 export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalProps) {
   const handleShare = (platform: string) => {
-    const text = `Právě jsem přidal svou verzi "${contentTitle}" 😭🔥 chaos.canvas`;
+    // Use contentTitle if provided, otherwise fallback
+    const displayTitle = contentTitle && contentTitle.trim() ? contentTitle : 'můj chaos';
+    const text = `Právě jsem přidal svou verzi "${displayTitle}" 😭🔥 chaos.canvas`;
     const url = window.location.origin;
     const shareUrl = `${url}?ref=${platform}`;
+    console.log('[SHARE] Platform:', platform, 'Title:', displayTitle, 'URL:', shareUrl);
 
     if (platform === 'native' && navigator.share) {
       navigator.share({

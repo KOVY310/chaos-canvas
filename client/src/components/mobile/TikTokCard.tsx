@@ -67,6 +67,8 @@ export function TikTokCard({
     }
   };
 
+  console.log('[TIKTOKCARD] Rendering with imageUrl:', imageUrl, 'title:', title);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -90,11 +92,13 @@ export function TikTokCard({
               src={imageUrl}
               alt={title}
               className="w-full h-full object-cover"
+              style={{ backgroundColor: '#f3f4f6' }}
               onError={(e) => {
-                console.error('[TIKTOK] Image failed to load:', imageUrl, e);
+                console.error('[TIKTOK] Image FAILED:', imageUrl, e);
+                (e.target as HTMLImageElement).style.display = 'none';
               }}
               onLoad={() => {
-                console.log('[TIKTOK] Image loaded:', imageUrl);
+                console.log('[TIKTOK] Image LOADED OK:', imageUrl);
               }}
             />
           </>
