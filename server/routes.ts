@@ -45,25 +45,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler + browser preview ==========
-  // Inject dynamic OG meta tags for both crawlers and browsers with ?og_image& params
+  // Inject dynamic OG meta tags with SVG embedded as data URL (Twitter/social media compatible)
   app.get("/", (req, res, next) => {
-    const ogImage = req.query.og_image as string;
     const ogTitle = req.query.og_title as string;
     
-    // If OG params present, serve HTML with dynamic meta tags (for crawlers + preview)
-    if (ogImage || ogTitle) {
-      const title = ogTitle ? decodeURIComponent(ogTitle).substring(0, 100) : "ChaosCanvas";
-      const image = ogImage ? decodeURIComponent(ogImage) : "https://chaos.canvas/logo.png";
+    // If og_title present, serve HTML with dynamic OG tags + embedded SVG as data URL
+    if (ogTitle) {
+      const title = decodeURIComponent(ogTitle).substring(0, 60);
+      console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
       
-      console.log('[OG MIDDLEWARE] ✅ OG params detected - Image:', image, 'Title:', title);
+      // Generate SVG with title embedded (Twitter doesn't support external SVG, but data URLs work)
+      const svg = `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#1a0033;stop-opacity:1" /><stop offset="50%" style="stop-color:#330066;stop-opacity:1" /><stop offset="100%" style="stop-color:#000033;stop-opacity:1" /></linearGradient></defs><rect width="1200" height="630" fill="url(#bg)"/><circle cx="150" cy="100" r="120" fill="#FF006E" opacity="0.2"/><circle cx="1050" cy="530" r="150" fill="#00F5FF" opacity="0.15"/><circle cx="600" cy="100" r="50" fill="#FF006E" stroke="#FF69B4" stroke-width="2"/><text x="600" y="120" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">C</text><text x="600" y="280" font-size="56" font-weight="bold" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif">${title}</text><text x="600" y="380" font-size="32" fill="#00F5FF" text-anchor="middle" font-family="Arial, sans-serif">Přidej svou verzi na chaos.canvas</text><rect x="0" y="550" width="1200" height="80" fill="#FF006E" opacity="0.8"/><text x="600" y="600" font-size="48" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">chaos.canvas</text></svg>`;
       
-      // Use our /api/og/share endpoint that generates SVG on our server (Twitter can access)
+      // Encode SVG as data URL for social media compatibility
+      const svgDataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+      
       const baseUrl = `${req.protocol}://${req.get('host')}`;
-      const ogImageUrl = `${baseUrl}/api/og/share?og_title=${encodeURIComponent(title)}`;
-      
-      console.log('[OG MIDDLEWARE] 🖼️ Serving OG with image URL:', ogImageUrl);
-      
-      // Return HTML with OG tags pointing to our SVG endpoint
       const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
 <head>
@@ -73,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta name="description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥 chaos.canvas" />
   <meta property="og:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta property="og:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
-  <meta property="og:image" content="${ogImageUrl}" />
+  <meta property="og:image" content="${svgDataUrl}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:type" content="website" />
@@ -81,9 +78,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
-  <meta name="twitter:image" content="${ogImageUrl}" />
+  <meta name="twitter:image" content="${svgDataUrl}" />
   <script>
-    // Redirect browser to app (crawlers don't execute JS, they just read meta tags)
     if (!/bot|crawler|spider/i.test(navigator.userAgent)) {
       window.location.href = window.location.origin + '?ref=twitter';
     }
