@@ -670,6 +670,11 @@ export default function CanvasPage() {
                           onReact={(type) => {
                             if (type === 'fire') handleBoost(contribution.id);
                           }}
+                          onShare={() => {
+                            console.log('[CANVAS] Share clicked for:', title);
+                            setLastContributionTitle(title);
+                            setAutoShareOpen(true);
+                          }}
                         />
                       </div>
                     );

@@ -10,6 +10,7 @@ interface TikTokCardProps {
   likes: number;
   onLike?: () => void;
   onReact?: (type: 'fire' | 'nuke') => void;
+  onShare?: () => void;
 }
 
 export function TikTokCard({
@@ -20,6 +21,7 @@ export function TikTokCard({
   likes,
   onLike,
   onReact,
+  onShare,
 }: TikTokCardProps) {
   const [liked, setLiked] = useState(false);
   const [reaction, setReaction] = useState<'fire' | 'nuke' | null>(null);
@@ -183,7 +185,7 @@ export function TikTokCard({
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={() => {
-              onReact?.('fire');
+              onShare?.();
               if ('vibrate' in navigator) navigator.vibrate([10, 5, 15]);
             }}
             className="flex flex-col items-center gap-0.5 group"
