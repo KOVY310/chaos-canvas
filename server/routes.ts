@@ -437,7 +437,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[AI] Generating via Unsplash (free, reliable)`);
       
       const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
-      const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},meme,art,viral,funny,chaos`;
+      const timestamp = Date.now(); // Prevent Unsplash caching - new image every request
+      const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},meme,art,viral,funny,chaos&t=${timestamp}`;
       
       console.log(`[AI] ✅ Image URL generated: ${imageUrl}`);
 
