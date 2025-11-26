@@ -14,10 +14,17 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
 
   // Update displayTitle whenever contentTitle changes or modal opens
   useEffect(() => {
-    if (open && contentTitle) {
-      const title = contentTitle.trim();
-      setDisplayTitle(title);
-      console.log('[AUTOSHARE] Modal opened with title:', title);
+    console.log('[AUTOSHARE] useEffect triggered - open:', open, 'contentTitle:', contentTitle);
+    if (open) {
+      if (contentTitle && contentTitle.trim()) {
+        const title = contentTitle.trim();
+        setDisplayTitle(title);
+        console.log('[AUTOSHARE] ✅ Set title from contentTitle:', title);
+      } else {
+        // Fallback if no contentTitle
+        setDisplayTitle('můj chaos');
+        console.log('[AUTOSHARE] ⚠️ No contentTitle, using fallback: můj chaos');
+      }
     }
   }, [open, contentTitle]);
 
