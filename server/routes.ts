@@ -44,24 +44,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     tracesSampleRate: 1.0,
   });
 
-  // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler support ==========
-  // Intercept requests with og_image/og_title params and inject into HTML for crawler
+  // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler + browser preview ==========
+  // Inject dynamic OG meta tags for both crawlers and browsers with ?og_image& params
   app.get("/", (req, res, next) => {
     const ogImage = req.query.og_image as string;
     const ogTitle = req.query.og_title as string;
-    const userAgent = req.get('user-agent') || '';
     
-    // Check if this is a crawler (Twitter, Facebook, etc.)
-    const isCrawler = /facebookexternalhit|Twitterbot|WhatsApp|LinkedInBot|Googlebot|Bingbot/i.test(userAgent);
-    
-    if ((ogImage || ogTitle) && isCrawler) {
-      // Send dynamic HTML with OG meta tags ONLY for crawlers
+    // If OG params present, serve HTML with dynamic meta tags (for crawlers + preview)
+    if (ogImage || ogTitle) {
       const title = ogTitle ? decodeURIComponent(ogTitle).substring(0, 100) : "ChaosCanvas";
       const image = ogImage ? decodeURIComponent(ogImage) : "https://chaos.canvas/logo.png";
       
-      console.log('[OG MIDDLEWARE] 🔥 Crawler detected:', userAgent.substring(0, 50));
-      console.log('[OG MIDDLEWARE] ✅ Returning OG image:', image);
+      console.log('[OG MIDDLEWARE] ✅ OG params detected - Image:', image, 'Title:', title);
       
+      // Return standard HTML wrapper with OG tags that works for crawlers + browsers
       const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
 <head>
@@ -80,15 +76,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
   <meta name="twitter:image" content="${image}" />
+  <script>
+    // Redirect browser to app (crawlers don't execute JS, they just read meta tags)
+    if (!/bot|crawler|spider/i.test(navigator.userAgent)) {
+      window.location.href = window.location.origin + '?ref=twitter';
+    }
+  </script>
 </head>
-<body>
-  <p>Načítám ChaosCanvas...</p>
-</body>
+<body>Načítám ChaosCanvas...</body>
 </html>`;
       return res.type("html").send(html);
     }
     
-    // Continue to default SPA rendering for browsers
+    // Continue to default SPA rendering
     next();
   });
 
