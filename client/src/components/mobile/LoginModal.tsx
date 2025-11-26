@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { useApp } from '@/context/AppContext';
+import * as api from '@/lib/api';
 
 interface LoginModalProps {
   open: boolean;
@@ -10,10 +12,12 @@ interface LoginModalProps {
 }
 
 export function LoginModal({ open, onOpenChange, onLogin }: LoginModalProps) {
+  const { locale, setChaosCoins, setCurrentUserId } = useApp();
   const [isLoading, setIsLoading] = useState(false);
   const [emailLogin, setEmailLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   // Handle ESC key to close modal
   useEffect(() => {
@@ -34,25 +38,37 @@ export function LoginModal({ open, onOpenChange, onLogin }: LoginModalProps) {
     if (!email) return;
 
     setIsLoading(true);
+    setError('');
     try {
-      // Simulate email auth
-      onLogin?.('email');
-      
-      // Show success state
-      setTimeout(() => {
+      // Determine currency from locale
+      const currencyMap: Record<string, string> = {
+        'cs-CZ': 'CZK', 'sk-SK': 'EUR', 'de-DE': 'EUR', 'en-US': 'USD',
+        'fil-PH': 'PHP', 'id-ID': 'IDR', 'pt-BR': 'BRL', 'tr-TR': 'TRY', 'vi-VN': 'VND'
+      };
+      const currency = currencyMap[locale] || 'USD';
+
+      // Create registered user with email
+      const newUser = await api.createUser({
+        email,
+        locale,
+        currency,
+        isAnonymous: false,
+      });
+
+      if (newUser?.id) {
+        setCurrentUserId(newUser.id);
+        setChaosCoins(500); // Bonus for registered users
         setLoginSuccess(true);
-        setIsLoading(false);
-        
-        // Close modal after success animation
         setTimeout(() => {
           setLoginSuccess(false);
           setEmail('');
           setEmailLogin(false);
           onOpenChange(false);
         }, 1500);
-      }, 500);
-    } catch (error) {
-      console.error('Login failed:', error);
+      }
+    } catch (error: any) {
+      console.error('Email login failed:', error);
+      setError(error.message || 'Přihlášení selhalo');
       setIsLoading(false);
     }
   };
@@ -161,6 +177,8 @@ export function LoginModal({ open, onOpenChange, onLogin }: LoginModalProps) {
                 <p className="text-xs text-gray-500">
                   Na tvůj e-mail pošleme ověřovací kód
                 </p>
+
+                {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
 
                 <button
                   type="submit"
