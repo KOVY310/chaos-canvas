@@ -155,43 +155,42 @@ export function TikTokCard({
             ))}
           </>
         )}
+
+        {/* Actions - RIGHT SIDE of image (overlay on bottom-right) */}
+        <div className="absolute bottom-4 right-4 flex flex-col gap-3">
+          <motion.button
+            whileTap={{ scale: 0.85 }}
+            onClick={() => {
+              setLiked(!liked);
+              onLike?.();
+              if ('vibrate' in navigator) navigator.vibrate([5, 5, 10]);
+            }}
+            className="flex flex-col items-center gap-0.5 group"
+            data-testid="button-like"
+          >
+            <motion.div whileHover={{ scale: 1.1 }}>
+              <Heart
+                className="w-5 h-5 transition-all group-hover:text-red-500 text-white drop-shadow-md"
+                fill={liked ? 'currentColor' : 'none'}
+                color={liked ? '#ef4444' : 'white'}
+              />
+            </motion.div>
+            <span className="text-xs font-medium text-white drop-shadow-md">
+              {likes.toLocaleString()}
+            </span>
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.85 }}
+            className="flex flex-col items-center gap-0.5 group"
+            data-testid="button-share"
+          >
+            <motion.div whileHover={{ scale: 1.1 }}>
+              <Share2 className="w-5 h-5 transition-all group-hover:text-primary text-white drop-shadow-md" />
+            </motion.div>
+            <span className="text-xs font-medium text-white drop-shadow-md">Sdílet</span>
+          </motion.button>
+        </div>
       </motion.div>
-
-      {/* Actions - below card with 12px gap */}
-      <div className="w-full flex gap-6 justify-center mt-3 px-4">
-        <motion.button
-          whileTap={{ scale: 0.85 }}
-          onClick={() => {
-            setLiked(!liked);
-            onLike?.();
-            if ('vibrate' in navigator) navigator.vibrate([5, 5, 10]);
-          }}
-          className="flex flex-col items-center gap-1 group"
-          data-testid="button-like"
-        >
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Heart
-              className="w-7 h-7 transition-all group-hover:text-red-500"
-              fill={liked ? 'currentColor' : 'none'}
-              color={liked ? '#ef4444' : 'currentColor'}
-            />
-          </motion.div>
-          <span className="text-xs font-medium text-muted-foreground">
-            {likes.toLocaleString()}
-          </span>
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.85 }}
-          className="flex flex-col items-center gap-1 group"
-          data-testid="button-share"
-        >
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Share2 className="w-7 h-7 transition-all group-hover:text-primary" />
-          </motion.div>
-          <span className="text-xs font-medium text-muted-foreground">Sdílet</span>
-        </motion.button>
-      </div>
-    </motion.div>
   );
 }

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
@@ -9,13 +10,24 @@ interface AutoShareModalProps {
 }
 
 export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalProps) {
+  const [displayTitle, setDisplayTitle] = useState('');
+
+  // Update displayTitle whenever contentTitle changes or modal opens
+  useEffect(() => {
+    if (open && contentTitle) {
+      const title = contentTitle.trim();
+      setDisplayTitle(title);
+      console.log('[AUTOSHARE] Modal opened with title:', title);
+    }
+  }, [open, contentTitle]);
+
   const handleShare = (platform: string) => {
-    // Use contentTitle if provided, otherwise fallback
-    const displayTitle = contentTitle && contentTitle.trim() ? contentTitle : 'můj chaos';
-    const text = `Právě jsem přidal svou verzi "${displayTitle}" 😭🔥 chaos.canvas`;
+    // Use state-managed displayTitle
+    const finalTitle = displayTitle || 'můj chaos';
+    const text = `Právě jsem přidal svou verzi "${finalTitle}" 😭🔥 chaos.canvas`;
     const url = window.location.origin;
     const shareUrl = `${url}?ref=${platform}`;
-    console.log('[SHARE] Platform:', platform, 'Title:', displayTitle, 'URL:', shareUrl);
+    console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'URL:', shareUrl);
 
     if (platform === 'native' && navigator.share) {
       navigator.share({
