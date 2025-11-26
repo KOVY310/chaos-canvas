@@ -645,6 +645,12 @@ export default function CanvasPage() {
                     const contentData = contribution.contentData as any;
                     const imageUrl = contentData?.url || '';
                     const title = contentData?.prompt || 'Chaos';
+                    
+                    // DEBUG: Log image URL
+                    if (imageUrl) {
+                      console.log('[CANVAS] Rendering image:', imageUrl);
+                    }
+                    
                     return (
                       <div key={contribution.id} className="snap-center h-screen w-full flex-shrink-0">
                         <TikTokCard
@@ -655,6 +661,7 @@ export default function CanvasPage() {
                           likes={contribution.boostCount || Math.floor(Math.random() * 10000)}
                           onLike={() => {
                             handleBoost(contribution.id);
+                            setLastContributionTitle(title);
                             if ((idx + 1) % 3 === 0) setShareOpen(true);
                           }}
                           onReact={(type) => {

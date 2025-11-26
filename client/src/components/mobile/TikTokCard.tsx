@@ -85,11 +85,19 @@ export function TikTokCard({
       >
         {/* Image */}
         {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <>
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('[TIKTOK] Image failed to load:', imageUrl, e);
+              }}
+              onLoad={() => {
+                console.log('[TIKTOK] Image loaded:', imageUrl);
+              }}
+            />
+          </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center p-6">
             <p className="text-white text-center font-heading font-bold text-2xl line-clamp-4">
