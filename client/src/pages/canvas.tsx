@@ -244,8 +244,11 @@ export default function CanvasPage() {
         toast({ title: 'Error', description: 'User session expired', variant: 'destructive' });
         return;
       }
-      // Store prompt for sharing
-      setLastContributionTitle(variables.prompt);
+      // Store prompt for sharing IMMEDIATELY
+      const promptToShare = variables.prompt.trim();
+      console.log('[CANVAS] Setting share title to:', promptToShare);
+      setLastContributionTitle(promptToShare);
+      
       // Create contribution with AI-generated content
       await createContributionMutation.mutateAsync({
         userId: currentUserId,
@@ -253,7 +256,7 @@ export default function CanvasPage() {
         contentType: 'image',
         contentData: {
           url: data.url,
-          prompt: variables.prompt,
+          prompt: promptToShare,
           style: variables.style,
         },
         positionX: Math.random() * 800,
