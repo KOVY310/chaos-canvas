@@ -468,10 +468,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const errorText = await hfResponse.text();
         console.error(`[AI] Both HF APIs failed: ${hfResponse.status}`, errorText);
         
-        // Fallback to rich image placeholder using unsplash random image
+        // Fallback to rich image placeholder using unsplash random image (320x320 for mobile optimization)
         // Uses search to get relevant images based on prompt
         const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
-        const imageUrl = `https://source.unsplash.com/512x512/?${encodeURIComponent(searchTerm)},art,meme,creative`;
+        const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},art,meme,creative`;
         return res.json({
           url: imageUrl,
           prompt,
