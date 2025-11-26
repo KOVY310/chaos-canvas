@@ -44,6 +44,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     tracesSampleRate: 1.0,
   });
 
+  // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler support ==========
+  // Intercept requests with og_image/og_title params and inject into HTML
+  app.get("/", (req, res, next) => {
+    const ogImage = req.query.og_image as string;
+    const ogTitle = req.query.og_title as string;
+    
+    if (ogImage || ogTitle) {
+      // Send dynamic HTML with OG meta tags for Twitter crawler
+      const title = ogTitle ? decodeURIComponent(ogTitle).substring(0, 100) : "ChaosCanvas";
+      const image = ogImage ? decodeURIComponent(ogImage) : "https://chaos.canvas/logo.png";
+      
+      const html = `<!DOCTYPE html>
+<html lang="cs-CZ">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChaosCanvas - Přidej svou verzi "${title}"</title>
+  <meta name="description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥 chaos.canvas" />
+  <meta property="og:title" content="Přidej svou verzi &quot;${title}&quot;" />
+  <meta property="og:description" content="Přidej svou verzi na chaos.canvas" />
+  <meta property="og:image" content="${image}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://chaos.canvas" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
+  <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
+  <meta name="twitter:image" content="${image}" />
+  <script>window.location.href = window.location.origin + '?ref=twitter';</script>
+</head>
+<body>
+  <p>Přesměrovávám na ChaosCanvas...</p>
+</body>
+</html>`;
+      return res.type("html").send(html);
+    }
+    
+    // Continue to default SPA rendering
+    next();
+  });
+
   // Auto-cleanup cron: Delete contributions older than 7 days (runs daily at 3 AM UTC)
   cron.schedule("0 3 * * *", async () => {
     try {
@@ -864,6 +906,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG IMAGE GENERATION ==========
+  // Dynamic share OG endpoint - generates preview with image and title
+  app.get("/api/og/share", async (req, res) => {
+    try {
+      const ogImage = req.query.og_image as string || "";
+      const ogTitle = (req.query.og_title as string || "můj chaos").substring(0, 100);
+      const width = 1200;
+      const height = 630;
+      
+      // Generate SVG OG preview with background image
+      const svg = `
+        <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <defs>
+            <linearGradient id="overlay" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#000000;stop-opacity:0.7" />
+              <stop offset="100%" style="stop-color:#1a0033;stop-opacity:0.9" />
+            </linearGradient>
+          </defs>
+          
+          <!-- Background image if provided -->
+          ${ogImage ? `<image xlink:href="${ogImage}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid slice"/>` : '<rect width="' + width + '" height="' + height + '" fill="#0a0015"/>'}
+          
+          <!-- Dark overlay -->
+          <rect width="${width}" height="${height}" fill="url(#overlay)"/>
+          
+          <!-- Logo -->
+          <circle cx="60" cy="60" r="40" fill="#FF006E" stroke="#FF69B4" stroke-width="2"/>
+          <text x="60" y="75" font-size="50" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">C</text>
+          
+          <!-- Title -->
+          <text x="600" y="200" font-size="48" font-weight="bold" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif">
+            ${ogTitle}
+          </text>
+          
+          <!-- Tagline -->
+          <text x="600" y="280" font-size="32" fill="#00F5FF" text-anchor="middle" font-family="Arial, sans-serif">
+            Přidej svou verzi na
+          </text>
+          
+          <!-- Branding -->
+          <text x="600" y="380" font-size="56" font-weight="bold" fill="#FFD700" text-anchor="middle" font-family="Arial, sans-serif">
+            chaos.canvas
+          </text>
+          
+          <!-- Call to action -->
+          <rect x="300" y="450" width="600" height="120" rx="20" fill="#FF006E" opacity="0.9"/>
+          <text x="600" y="525" font-size="40" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">
+            Tvoř s námi
+          </text>
+        </svg>
+      `;
+      
+      res.type('svg').send(svg);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get("/api/og/today.png", async (req, res) => {
     try {
       const prompt = "Létající svíčková nad Prahou";
