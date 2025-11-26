@@ -911,52 +911,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG IMAGE GENERATION ==========
-  // Generate simple OG image accessible to Twitter (SVG on our server)
+  // Generate OG image using placehold.co (simple and reliable)
   app.get("/api/og/share", async (req, res) => {
     try {
       const ogTitle = (req.query.og_title as string || "můj chaos").substring(0, 60);
-      const width = 1200;
-      const height = 630;
-      
-      // Generate SIMPLE SVG OG image - Twitter can fetch this from our server
-      const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a0033;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#330066;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#000033;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
-  <!-- Background -->
-  <rect width="${width}" height="${height}" fill="url(#bg)"/>
-  
-  <!-- Accent orbs -->
-  <circle cx="150" cy="100" r="120" fill="#FF006E" opacity="0.2"/>
-  <circle cx="1050" cy="530" r="150" fill="#00F5FF" opacity="0.15"/>
-  
-  <!-- Logo -->
-  <circle cx="600" cy="100" r="50" fill="#FF006E" stroke="#FF69B4" stroke-width="2"/>
-  <text x="600" y="120" font-size="60" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">C</text>
-  
-  <!-- Main title -->
-  <text x="600" y="280" font-size="56" font-weight="bold" fill="#FF69B4" text-anchor="middle" font-family="Arial, sans-serif" word-spacing="5">
-    ${ogTitle}
-  </text>
-  
-  <!-- Tagline -->
-  <text x="600" y="380" font-size="32" fill="#00F5FF" text-anchor="middle" font-family="Arial, sans-serif">
-    Přidej svou verzi na chaos.canvas
-  </text>
-  
-  <!-- Branding bar -->
-  <rect x="0" y="550" width="${width}" height="80" fill="#FF006E" opacity="0.8"/>
-  <text x="600" y="600" font-size="48" font-weight="bold" fill="white" text-anchor="middle" font-family="Arial, sans-serif">
-    chaos.canvas
-  </text>
-</svg>`;
-      
-      res.type('svg').send(svg);
+      // Redirect to placehold.co which generates PNG with text
+      const imageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(ogTitle)}`;
+      res.redirect(imageUrl);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
