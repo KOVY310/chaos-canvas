@@ -45,20 +45,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     tracesSampleRate: 1.0,
   });
 
-  // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler + browser preview ==========
-  // Inject dynamic OG meta tags pointing to our own /api/og/share endpoint
-  app.get("/", (req, res, next) => {
-    const ogTitle = req.query.og_title as string;
+  // ========== OG META TAGS ROUTE - Twitter/X crawler with direct URL path ==========
+  // Use /share/:title to create shareable URLs with embedded metadata
+  app.get("/share/:title", (req, res) => {
+    const title = decodeURIComponent(req.params.title).substring(0, 60);
+    console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
     
-    // If og_title present, serve HTML with dynamic OG tags
-    if (ogTitle) {
-      const title = decodeURIComponent(ogTitle).substring(0, 60);
-      console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
-      
-      // Point directly to placehold.co (Twitter can access public URLs, not dev servers)
-      const ogImageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(title)}`;
-      
-      const html = `<!DOCTYPE html>
+    // Point directly to placehold.co (Twitter can access public URLs reliably)
+    const ogImageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(title)}`;
+    
+    const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
 <head>
   <meta charset="UTF-8" />
@@ -71,23 +67,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="${baseUrl}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
   <meta name="twitter:image" content="${ogImageUrl}" />
   <script>
-    if (!/bot|crawler|spider/i.test(navigator.userAgent)) {
-      window.location.href = window.location.origin + '?ref=twitter';
-    }
+    window.location.href = window.location.origin + '?ref=twitter';
   </script>
 </head>
 <body>Načítám ChaosCanvas...</body>
 </html>`;
-      return res.type("html").send(html);
-    }
-    
-    // Continue to default SPA rendering
+    return res.type("html").send(html);
+  });
+
+  // ========== DEFAULT ROOT ROUTE ==========
+  app.get("/", (req, res, next) => {
     next();
   });
 
