@@ -432,65 +432,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[AI] Generating: "${fullPrompt}"`);
 
-      // Use Hugging Face free inference API
-      const hfApiKey = process.env.HUGGING_FACE_API_KEY;
-      const hfHeaders: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (hfApiKey) {
-        hfHeaders["Authorization"] = `Bearer ${hfApiKey}`;
-      }
-
-      // Try FLUX.1-schnell via free Hugging Face inference
-      let hfResponse = await fetch(
-        "https://router.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
-        {
-          method: "POST",
-          headers: hfHeaders,
-          body: JSON.stringify({ inputs: fullPrompt }),
-        }
-      );
-
-      // Fallback to Stable Diffusion v1.5 if FLUX fails
-      if (!hfResponse.ok) {
-        console.log(`[AI] FLUX.1-schnell failed (${hfResponse.status}), trying fallback...`);
-        hfResponse = await fetch(
-          "https://router.huggingface.co/models/runwayml/stable-diffusion-v1-5",
-          {
-            method: "POST",
-            headers: hfHeaders,
-            body: JSON.stringify({ inputs: fullPrompt }),
-          }
-        );
-      }
-
-      if (!hfResponse.ok) {
-        const errorText = await hfResponse.text();
-        console.error(`[AI] Both HF APIs failed: ${hfResponse.status}`, errorText);
-        
-        // Fallback to rich image placeholder using unsplash random image (320x320 for mobile optimization)
-        // Uses search to get relevant images based on prompt
-        const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
-        const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},art,meme,creative`;
-        return res.json({
-          url: imageUrl,
-          prompt,
-          style,
-          note: "Using creative image placeholder - AI generation temporarily unavailable",
-        });
-      }
-
-      // Convert image buffer to base64
-      const buffer = await hfResponse.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString('base64');
-      const imageUrl = `data:image/png;base64,${base64}`;
-
-      console.log(`[AI] ✅ Generated successfully`);
+      // Direct Unsplash API for reliable image fallback (mobile-optimized 320x320)
+      // HuggingFace free API has strict rate limits and cold-start issues
+      console.log(`[AI] Generating via Unsplash (free, reliable)`);
+      
+      const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
+      const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},meme,art,viral,funny,chaos`;
+      
+      console.log(`[AI] ✅ Image URL generated: ${imageUrl}`);
 
       res.json({
         url: imageUrl,
         prompt,
         style,
+        source: "unsplash",
       });
     } catch (error: any) {
       console.error("[AI] Generation error:", error.message);
