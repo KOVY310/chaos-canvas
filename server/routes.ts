@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
+import https from "https";
 import * as cron from "node-cron";
 import Stripe from "stripe";
 import { 
@@ -911,13 +912,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG IMAGE GENERATION ==========
-  // Generate OG image using placehold.co (simple and reliable)
+  // Generate OG image using placehold.co (fetch server-side, return directly)
   app.get("/api/og/share", async (req, res) => {
     try {
       const ogTitle = (req.query.og_title as string || "můj chaos").substring(0, 60);
-      // Redirect to placehold.co which generates PNG with text
+      // Fetch image from placehold.co server-side (Twitter needs direct image, not redirect)
       const imageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(ogTitle)}`;
-      res.redirect(imageUrl);
+      
+      https.get(imageUrl, (response) => {
+        res.type('png');
+        response.pipe(res);
+      }).on('error', (error) => {
+        res.status(500).json({ error: error.message });
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
