@@ -156,8 +156,8 @@ export function TikTokCard({
           </>
         )}
 
-        {/* Actions - RIGHT SIDE of image (overlay on bottom-right) */}
-        <div className="absolute bottom-4 right-4 flex flex-col gap-3">
+        {/* Actions - RIGHT SIDE TOPRIGHT of image (overlay on top-right) */}
+        <div className="absolute top-4 right-4 flex flex-col gap-3">
           <motion.button
             whileTap={{ scale: 0.85 }}
             onClick={() => {
@@ -182,6 +182,10 @@ export function TikTokCard({
 
           <motion.button
             whileTap={{ scale: 0.85 }}
+            onClick={() => {
+              onReact?.('fire');
+              if ('vibrate' in navigator) navigator.vibrate([10, 5, 15]);
+            }}
             className="flex flex-col items-center gap-0.5 group"
             data-testid="button-share"
           >
