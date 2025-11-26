@@ -45,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler + browser preview ==========
-  // Inject dynamic OG meta tags with PlaceHolder.co image
+  // Inject dynamic OG meta tags pointing to our own /api/og/share endpoint
   app.get("/", (req, res, next) => {
     const ogTitle = req.query.og_title as string;
     
@@ -55,8 +55,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
       
       const baseUrl = `${req.protocol}://${req.get('host')}`;
-      // Use placehold.co to generate image with text - PNG format works with Twitter
-      const ogImageUrl = `https://placehold.co/1200x630/6366f1/white?text=${encodeURIComponent(title)}`;
+      // Point to our own SVG endpoint - Twitter can access our server
+      const ogImageUrl = `${baseUrl}/api/og/share?og_title=${encodeURIComponent(title)}`;
       
       const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
