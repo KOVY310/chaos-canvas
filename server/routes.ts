@@ -71,11 +71,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
   <meta name="twitter:image" content="${ogImageUrl}" />
-  <script>
-    window.location.href = window.location.origin + '?ref=twitter';
-  </script>
 </head>
-<body>Načítám ChaosCanvas...</body>
+<body>
+  <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+    <div style="text-align: center;">
+      <h1 style="margin: 0; font-size: 24px; color: #333;">ChaosCanvas</h1>
+      <p style="color: #666; margin-top: 8px;">Právě jsem přidal svou verzi "${title}" 😭🔥</p>
+      <p style="color: #999; font-size: 14px; margin-top: 16px;">
+        <a href="/" style="color: #6366f1; text-decoration: none;">Zpět na Canvas</a>
+      </p>
+    </div>
+  </div>
+</body>
 </html>`;
     return res.type("html").send(html);
   });
