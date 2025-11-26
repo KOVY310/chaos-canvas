@@ -192,5 +192,6 @@ export function TikTokCard({
           </motion.button>
         </div>
       </motion.div>
+    </motion.div>
   );
 }
