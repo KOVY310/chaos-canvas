@@ -35,14 +35,13 @@ export function AutoShareModal({ open, onClose, contentTitle, imageUrl }: AutoSh
     const text = `Právě jsem přidal svou verzi "${finalTitle}" 😭🔥 chaos.canvas`;
     const baseUrl = window.location.origin;
     
-    // Build share URL - use API endpoint for OG image generation
-    const ogImageUrl = imageUrl 
-      ? `${baseUrl}/api/og/share?og_image=${encodeURIComponent(imageUrl)}&og_title=${encodeURIComponent(finalTitle)}`
-      : `${baseUrl}/api/og/today.png`;
-    
-    // Share URL will be base URL with ref parameter
+    // Build share URL with OG meta tags for Twitter crawler
     let shareUrl = `${baseUrl}?ref=${platform}`;
-    console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'OG Image:', ogImageUrl);
+    if (imageUrl) {
+      shareUrl += `&og_image=${encodeURIComponent(imageUrl)}&og_title=${encodeURIComponent(finalTitle)}`;
+      console.log('[SHARE] ✅ Added OG params to shareUrl:', shareUrl);
+    }
+    console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'Image:', imageUrl, 'Share URL:', shareUrl);
 
     if (platform === 'native' && navigator.share) {
       navigator.share({

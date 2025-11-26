@@ -45,15 +45,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ========== OG META TAGS MIDDLEWARE - Twitter/X crawler support ==========
-  // Intercept requests with og_image/og_title params and inject into HTML
+  // Intercept requests with og_image/og_title params and inject into HTML for crawler
   app.get("/", (req, res, next) => {
     const ogImage = req.query.og_image as string;
     const ogTitle = req.query.og_title as string;
+    const userAgent = req.get('user-agent') || '';
     
-    if (ogImage || ogTitle) {
-      // Send dynamic HTML with OG meta tags for Twitter crawler
+    // Check if this is a crawler (Twitter, Facebook, etc.)
+    const isCrawler = /facebookexternalhit|Twitterbot|WhatsApp|LinkedInBot|Googlebot|Bingbot/i.test(userAgent);
+    
+    if ((ogImage || ogTitle) && isCrawler) {
+      // Send dynamic HTML with OG meta tags ONLY for crawlers
       const title = ogTitle ? decodeURIComponent(ogTitle).substring(0, 100) : "ChaosCanvas";
       const image = ogImage ? decodeURIComponent(ogImage) : "https://chaos.canvas/logo.png";
+      
+      console.log('[OG MIDDLEWARE] 🔥 Crawler detected:', userAgent.substring(0, 50));
+      console.log('[OG MIDDLEWARE] ✅ Returning OG image:', image);
       
       const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
@@ -68,21 +75,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://chaos.canvas" />
+  <meta property="og:url" content="${req.protocol}://${req.get('host')}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Přidej svou verzi &quot;${title}&quot;" />
   <meta name="twitter:description" content="Právě jsem přidal svou verzi &quot;${title}&quot; 😭🔥" />
   <meta name="twitter:image" content="${image}" />
-  <script>window.location.href = window.location.origin + '?ref=twitter';</script>
 </head>
 <body>
-  <p>Přesměrovávám na ChaosCanvas...</p>
+  <p>Načítám ChaosCanvas...</p>
 </body>
 </html>`;
       return res.type("html").send(html);
     }
     
-    // Continue to default SPA rendering
+    // Continue to default SPA rendering for browsers
     next();
   });
 
