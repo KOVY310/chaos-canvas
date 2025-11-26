@@ -406,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ========== AI CO-PILOT ROUTES (Hugging Face Free API) ==========
+  // ========== AI CO-PILOT ROUTES (Unsplash + Pexels API) ==========
   
   app.post("/api/ai/generate", async (req, res) => {
     try {
@@ -419,34 +419,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use user's prompt, NOT seed prompt
       prompt = String(prompt).trim();
 
-      // Style mappings for Hugging Face Stable Diffusion
+      // Style mappings for image search
       const styleMap: Record<string, string> = {
-        meme: "viral tiktok meme, funny, trending, high quality",
-        pixel: "pixel art, retro game style, 8-bit, vibrant",
-        anime: "anime style, detailed, vibrant, beautiful, high quality",
-        photo: "photorealistic, ultra detailed, 4k, professional photography",
-        surreal: "surreal, dreamlike, salvador dali style, abstract, vibrant",
+        meme: "viral tiktok meme, funny, trending",
+        pixel: "pixel art, retro game style, 8-bit",
+        anime: "anime style, detailed, vibrant",
+        photo: "photorealistic, ultra detailed, 4k",
+        surreal: "surreal, dreamlike, abstract",
       };
 
-      const fullPrompt = `${prompt}, ${styleMap[style] || styleMap.meme}`;
+      const searchQuery = `${prompt} ${styleMap[style] || styleMap.meme}`;
+      console.log(`[AI] Generating image for: "${searchQuery}"`);
 
-      console.log(`[AI] Generating: "${fullPrompt}"`);
+      let imageUrl: string | null = null;
+      let source = "unknown";
 
-      // Direct Unsplash API for reliable image fallback (mobile-optimized 320x320)
-      // HuggingFace free API has strict rate limits and cold-start issues
-      console.log(`[AI] Generating via Unsplash (free, reliable)`);
-      
-      const searchTerm = prompt.split(',')[0].trim().substring(0, 20);
-      const timestamp = Date.now(); // Prevent Unsplash caching - new image every request
-      const imageUrl = `https://source.unsplash.com/320x320/?${encodeURIComponent(searchTerm)},meme,art,viral,funny,chaos&t=${timestamp}`;
-      
-      console.log(`[AI] ✅ Image URL generated: ${imageUrl}`);
+      // Try Unsplash API first (Primary)
+      try {
+        const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+        if (!unsplashKey) {
+          throw new Error("UNSPLASH_ACCESS_KEY not configured");
+        }
+
+        const unsplashRes = await fetch(
+          `https://api.unsplash.com/photos/random?query=${encodeURIComponent(searchQuery)}&w=320&h=320&client_id=${unsplashKey}`,
+          { headers: { 'Accept-Version': 'v1' } }
+        );
+
+        if (unsplashRes.ok) {
+          const data = await unsplashRes.json() as any;
+          imageUrl = data.urls?.regular || data.urls?.small;
+          source = "unsplash";
+          console.log(`[AI] ✅ Unsplash: ${imageUrl}`);
+        } else {
+          console.warn(`[AI] Unsplash failed (${unsplashRes.status}), trying Pexels...`);
+        }
+      } catch (error: any) {
+        console.warn(`[AI] Unsplash error: ${error.message}`);
+      }
+
+      // Fallback to Pexels API
+      if (!imageUrl) {
+        try {
+          const pexelsKey = process.env.PEXELS_API_KEY;
+          if (!pexelsKey) {
+            throw new Error("PEXELS_API_KEY not configured");
+          }
+
+          const pexelsRes = await fetch(
+            `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=1&size=small`,
+            { headers: { 'Authorization': pexelsKey } }
+          );
+
+          if (pexelsRes.ok) {
+            const data = await pexelsRes.json() as any;
+            if (data.photos && data.photos.length > 0) {
+              imageUrl = data.photos[0].src?.small;
+              source = "pexels";
+              console.log(`[AI] ✅ Pexels: ${imageUrl}`);
+            }
+          } else {
+            console.warn(`[AI] Pexels failed (${pexelsRes.status})`);
+          }
+        } catch (error: any) {
+          console.warn(`[AI] Pexels error: ${error.message}`);
+        }
+      }
+
+      // Fallback to placeholder if both APIs fail
+      if (!imageUrl) {
+        imageUrl = `https://placeholder.co/320x320?text=${encodeURIComponent(prompt.substring(0, 20))}`;
+        source = "placeholder";
+        console.log(`[AI] ⚠️ Fallback placeholder: ${imageUrl}`);
+      }
 
       res.json({
         url: imageUrl,
         prompt,
         style,
-        source: "unsplash",
+        source,
       });
     } catch (error: any) {
       console.error("[AI] Generation error:", error.message);
