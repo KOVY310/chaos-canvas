@@ -7,9 +7,10 @@ interface AutoShareModalProps {
   open: boolean;
   onClose: () => void;
   contentTitle: string;
+  imageUrl?: string;
 }
 
-export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalProps) {
+export function AutoShareModal({ open, onClose, contentTitle, imageUrl }: AutoShareModalProps) {
   const [displayTitle, setDisplayTitle] = useState('');
 
   // Update displayTitle whenever contentTitle changes or modal opens
@@ -32,9 +33,16 @@ export function AutoShareModal({ open, onClose, contentTitle }: AutoShareModalPr
     // Use state-managed displayTitle
     const finalTitle = displayTitle || 'můj chaos';
     const text = `Právě jsem přidal svou verzi "${finalTitle}" 😭🔥 chaos.canvas`;
-    const url = window.location.origin;
-    const shareUrl = `${url}?ref=${platform}`;
-    console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'URL:', shareUrl);
+    const baseUrl = window.location.origin;
+    
+    // Build share URL with image for OG meta tags
+    let shareUrl = `${baseUrl}?ref=${platform}`;
+    if (imageUrl) {
+      const encodedImg = encodeURIComponent(imageUrl);
+      shareUrl += `&og_image=${encodedImg}&og_title=${encodeURIComponent(finalTitle)}`;
+      console.log('[SHARE] Share URL with image:', shareUrl);
+    }
+    console.log('[SHARE] Platform:', platform, 'Title:', finalTitle, 'Image:', imageUrl);
 
     if (platform === 'native' && navigator.share) {
       navigator.share({

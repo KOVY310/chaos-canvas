@@ -60,6 +60,7 @@ export default function CanvasPage() {
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [celebrationText, setCelebrationText] = useState('');
   const [lastContributionTitle, setLastContributionTitle] = useState('');
+  const [lastContributionImageUrl, setLastContributionImageUrl] = useState('');
   const [autoShareOpen, setAutoShareOpen] = useState(false);
   const [isCopilotCollapsed, setIsCopilotCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('canvas');
@@ -625,6 +626,7 @@ export default function CanvasPage() {
           open={autoShareOpen} 
           onClose={() => setAutoShareOpen(false)}
           contentTitle={lastContributionTitle}
+          imageUrl={lastContributionImageUrl}
         />
 
         {/* Logo - Top left 44px */}
@@ -674,12 +676,12 @@ export default function CanvasPage() {
                             console.log('[CANVAS] 🔥 Share clicked for contribution:', {
                               contributionId: contribution.id,
                               title: title,
-                              prompt: contentData?.prompt,
+                              imageUrl: imageUrl,
                             });
                             setLastContributionTitle(title);
-                            console.log('[CANVAS] ✅ Set lastContributionTitle:', title);
+                            setLastContributionImageUrl(imageUrl);
+                            console.log('[CANVAS] ✅ Set lastContributionTitle:', title, 'imageUrl:', imageUrl);
                             setAutoShareOpen(true);
-                            console.log('[CANVAS] ✅ Opened AutoShareModal');
                           }}
                         />
                       </div>
