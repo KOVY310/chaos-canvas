@@ -6,6 +6,7 @@ import { z } from "zod";
 import https from "https";
 import * as cron from "node-cron";
 import Stripe from "stripe";
+import sharp from "sharp";
 import { 
   insertUserSchema, 
   insertCanvasLayerSchema, 
@@ -45,14 +46,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     tracesSampleRate: 1.0,
   });
 
+  // ========== OG IMAGE GENERATION - Generate PNG with text ==========
+  app.get("/api/og/image/:title", async (req, res) => {
+    try {
+      const title = decodeURIComponent(req.params.title).substring(0, 100);
+      console.log('[OG IMAGE] Generating PNG for title:', title);
+      
+      // Create a gradient background with purple/indigo theme
+      const width = 1200;
+      const height = 630;
+      
+      // Create SVG with text that we'll convert to PNG
+      const svgImage = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="${width}" height="${height}" fill="url(#grad)"/>
+        <text x="${width / 2}" y="${height / 2 - 40}" font-size="72" font-weight="bold" text-anchor="middle" fill="white" font-family="Arial, sans-serif">
+          ChaosCanvas
+        </text>
+        <text x="${width / 2}" y="${height / 2 + 60}" font-size="48" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-weight="500">
+          ${title.substring(0, 50)}${title.length > 50 ? '...' : ''}
+        </text>
+      </svg>`;
+      
+      const buffer = await sharp(Buffer.from(svgImage))
+        .png()
+        .toBuffer();
+      
+      res.type('image/png');
+      res.set('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+      res.set('Content-Length', buffer.length);
+      res.send(buffer);
+    } catch (error) {
+      console.error('[OG IMAGE] Error:', error);
+      res.status(500).json({ error: 'Failed to generate image' });
+    }
+  });
+
   // ========== OG META TAGS ROUTE - Twitter/X crawler with direct URL path ==========
   // Use /share/:title to create shareable URLs with embedded metadata
   app.get("/share/:title", (req, res) => {
     const title = decodeURIComponent(req.params.title).substring(0, 60);
     console.log('[OG MIDDLEWARE] ✅ Generating OG with title:', title);
     
-    // Point directly to placehold.co (Twitter can access public URLs reliably)
-    const ogImageUrl = `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent(title)}`;
+    // Point to our own server-generated image endpoint (Twitter can reliably fetch from our domain)
+    const ogImageUrl = `${req.protocol}://${req.get('host')}/api/og/image/${encodeURIComponent(title)}`;
     
     const html = `<!DOCTYPE html>
 <html lang="cs-CZ">
